@@ -30,6 +30,7 @@ export interface SplideConfig {
   start?: number;
   
   // Padding Configuration
+  padding?: { left?: string; right?: string; top?: string; bottom?: string };
   paddingType?: 'horizontal' | 'vertical';
   paddingUnit?: 'px' | 'rem' | '%' | 'em' | 'vw';
   paddingLeft?: number;
@@ -43,6 +44,7 @@ export interface SplideConfig {
   isNavigation?: boolean;
   trimSpace?: boolean;
   updateOnMove?: boolean;
+  destroy?: boolean;
 
   // Keyboard Navigation
   keyboard?: boolean | 'global';
@@ -56,4 +58,21 @@ export interface SplideConfig {
 export interface Breakpoint {
   width: number;
   label: string;
+}
+
+export interface ConfigField {
+  key: keyof SplideConfig;
+  label: string;
+  type: 'boolean' | 'select' | 'dimension' | 'number' | 'text';
+  description: string;
+  defaultValue?: string | number | boolean | null;
+  options?: string[];
+  optionValues?: (string | number | boolean | null)[];
+  units?: string[];
+  step?: number;
+}
+
+export interface ConfigSection {
+  title: string;
+  fields: ConfigField[];
 }

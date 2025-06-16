@@ -222,5 +222,17 @@ export const configSections: ConfigSection[] = [
         defaultValue: false
       }
     ]
+  },
+  {
+    title: 'Advanced Options',
+    fields: [
+      {
+        key: 'destroy',
+        label: 'Destroy',
+        type: 'boolean',
+        description: "Completely destroys the carousel when it's not active. Useful for improving performance in complex applications.",
+        defaultValue: false
+      }
+    ]
   }
 ];

@@ -52,6 +52,7 @@ function App() {
             <CodeOutput 
               config={config} 
               className={isFullscreen ? 'hidden' : ''}
+              onChange={setConfig}
             />
           </div>
         </div>
