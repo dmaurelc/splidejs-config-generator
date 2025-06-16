@@ -1,12 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { Splide, SplideSlide } from '@splidejs/react-splide';
-import { Monitor, Laptop, Tablet, Smartphone, Maximize2, Minimize2 } from 'lucide-react';
-import '@splidejs/react-splide/css';
-import { SplideConfig } from '../types/config';
-import { breakpoints } from '../data/breakpoints';
-import { Button } from './ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
-import { configSections } from '../data/configSections';
+import React, { useState, useEffect } from "react";
+import { Splide, SplideSlide } from "@splidejs/react-splide";
+import {
+  Monitor,
+  Laptop,
+  Tablet,
+  Smartphone,
+  Maximize2,
+  Minimize2,
+} from "lucide-react";
+import "@splidejs/react-splide/css";
+import { SplideConfig } from "../types/config";
+import { breakpoints } from "../data/breakpoints";
+import { Button } from "./ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
+import { configSections } from "../data/configSections";
 
 interface PreviewProps {
   config: SplideConfig;
@@ -16,30 +28,30 @@ interface PreviewProps {
   onFullscreenToggle: () => void;
 }
 
-export const Preview: React.FC<PreviewProps> = ({ 
-  config, 
+export const Preview: React.FC<PreviewProps> = ({
+  config,
   activeBreakpoint,
   onBreakpointChange,
   isFullscreen,
-  onFullscreenToggle
+  onFullscreenToggle,
 }) => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const slides = [
-    'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
-    'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d',
-    'https://images.unsplash.com/photo-1433086966358-54859d0ed716',
-    'https://images.unsplash.com/photo-1501854140801-50d01698950b',
-    'https://images.unsplash.com/photo-1441974231531-c6227db76b6e',
-    'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05',
-    'https://images.unsplash.com/photo-1472214103451-9374bd1c798e',
-    'https://images.unsplash.com/photo-1490730141103-6cac27aaab94',
-    'https://images.unsplash.com/photo-1501785888041-af3ef285b470',
-    'https://images.unsplash.com/photo-1475924156734-496f6cac6ec1',
-    'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07',
-    'https://images.unsplash.com/photo-1510784722466-f2aa9c52fff6',
-    'https://images.unsplash.com/photo-1505765050516-f72dcac9c60e',
-    'https://images.unsplash.com/photo-1439853949127-fa647821eba0',
-    'https://images.unsplash.com/photo-1518495973542-4542c06a5843'
+    "https://images.unsplash.com/photo-1469474968028-56623f02e42e",
+    "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d",
+    "https://images.unsplash.com/photo-1433086966358-54859d0ed716",
+    "https://images.unsplash.com/photo-1501854140801-50d01698950b",
+    "https://images.unsplash.com/photo-1441974231531-c6227db76b6e",
+    "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05",
+    "https://images.unsplash.com/photo-1472214103451-9374bd1c798e",
+    "https://images.unsplash.com/photo-1490730141103-6cac27aaab94",
+    "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
+    "https://images.unsplash.com/photo-1475924156734-496f6cac6ec1",
+    "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07",
+    "https://images.unsplash.com/photo-1510784722466-f2aa9c52fff6",
+    "https://images.unsplash.com/photo-1505765050516-f72dcac9c60e",
+    "https://images.unsplash.com/photo-1439853949127-fa647821eba0",
+    "https://images.unsplash.com/photo-1518495973542-4542c06a5843",
   ];
 
   useEffect(() => {
@@ -47,8 +59,8 @@ export const Preview: React.FC<PreviewProps> = ({
       setWindowWidth(window.innerWidth);
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const formatPaddingValue = (value: number, unit: string) => {
@@ -56,28 +68,35 @@ export const Preview: React.FC<PreviewProps> = ({
   };
 
   const getPaddingConfig = (cfg: Partial<SplideConfig>) => {
-    const { paddingType = 'horizontal', paddingUnit = 'px', paddingLeft = 0, paddingRight = 0, paddingTop = 0, paddingBottom = 0 } = cfg;
-    
-    if (paddingType === 'horizontal' && (paddingLeft > 0 || paddingRight > 0)) {
+    const {
+      paddingType = "horizontal",
+      paddingUnit = "px",
+      paddingLeft = 0,
+      paddingRight = 0,
+      paddingTop = 0,
+      paddingBottom = 0,
+    } = cfg;
+
+    if (paddingType === "horizontal" && (paddingLeft > 0 || paddingRight > 0)) {
       return {
         left: formatPaddingValue(paddingLeft, paddingUnit),
-        right: formatPaddingValue(paddingRight, paddingUnit)
+        right: formatPaddingValue(paddingRight, paddingUnit),
       };
     }
-    
-    if (paddingType === 'vertical' && (paddingTop > 0 || paddingBottom > 0)) {
+
+    if (paddingType === "vertical" && (paddingTop > 0 || paddingBottom > 0)) {
       return {
         top: formatPaddingValue(paddingTop, paddingUnit),
-        bottom: formatPaddingValue(paddingBottom, paddingUnit)
+        bottom: formatPaddingValue(paddingBottom, paddingUnit),
       };
     }
-    
+
     return undefined;
   };
 
   const getCurrentConfig = () => {
     const baseConfig = { ...config };
-    
+
     // Mantener width y height
     if (baseConfig.width) {
       baseConfig.width = String(baseConfig.width);
@@ -103,7 +122,7 @@ export const Preview: React.FC<PreviewProps> = ({
 
     if (activeBreakpoint && config.breakpoints[activeBreakpoint]) {
       const breakpointConfig = config.breakpoints[activeBreakpoint];
-      
+
       // Mantener width y height del breakpoint si existen
       if (breakpointConfig.width) {
         breakpointConfig.width = String(breakpointConfig.width);
@@ -119,7 +138,8 @@ export const Preview: React.FC<PreviewProps> = ({
         paddingLeft: breakpointConfig.paddingLeft ?? baseConfig.paddingLeft,
         paddingRight: breakpointConfig.paddingRight ?? baseConfig.paddingRight,
         paddingTop: breakpointConfig.paddingTop ?? baseConfig.paddingTop,
-        paddingBottom: breakpointConfig.paddingBottom ?? baseConfig.paddingBottom
+        paddingBottom:
+          breakpointConfig.paddingBottom ?? baseConfig.paddingBottom,
       });
 
       // Limpiar propiedades de padding del breakpoint
@@ -134,7 +154,7 @@ export const Preview: React.FC<PreviewProps> = ({
       return {
         ...baseConfig,
         ...cleanBreakpointConfig,
-        ...(breakpointPadding ? { padding: breakpointPadding } : {})
+        ...(breakpointPadding ? { padding: breakpointPadding } : {}),
       };
     }
 
@@ -145,7 +165,7 @@ export const Preview: React.FC<PreviewProps> = ({
 
     if (applicableBreakpoints.length > 0) {
       const breakpointConfig = applicableBreakpoints[0].config;
-      
+
       // Mantener width y height del breakpoint si existen
       if (breakpointConfig.width) {
         breakpointConfig.width = String(breakpointConfig.width);
@@ -161,7 +181,8 @@ export const Preview: React.FC<PreviewProps> = ({
         paddingLeft: breakpointConfig.paddingLeft ?? baseConfig.paddingLeft,
         paddingRight: breakpointConfig.paddingRight ?? baseConfig.paddingRight,
         paddingTop: breakpointConfig.paddingTop ?? baseConfig.paddingTop,
-        paddingBottom: breakpointConfig.paddingBottom ?? baseConfig.paddingBottom
+        paddingBottom:
+          breakpointConfig.paddingBottom ?? baseConfig.paddingBottom,
       });
 
       // Limpiar propiedades de padding del breakpoint
@@ -176,7 +197,7 @@ export const Preview: React.FC<PreviewProps> = ({
       return {
         ...baseConfig,
         ...cleanBreakpointConfig,
-        ...(breakpointPadding ? { padding: breakpointPadding } : {})
+        ...(breakpointPadding ? { padding: breakpointPadding } : {}),
       };
     }
 
@@ -184,14 +205,17 @@ export const Preview: React.FC<PreviewProps> = ({
   };
 
   const hasBreakpointChanges = (width: number) => {
-    return config.breakpoints?.[width] && Object.keys(config.breakpoints[width]).length > 0;
+    return (
+      config.breakpoints?.[width] &&
+      Object.keys(config.breakpoints[width]).length > 0
+    );
   };
 
   const hasBaseConfigChanges = () => {
     const initialConfig = configSections.reduce((acc, section) => {
       section.fields.forEach((field) => {
         if (field.defaultValue !== undefined) {
-          acc[field.key] = field.defaultValue;
+          acc[field.key] = JSON.parse(JSON.stringify(field.defaultValue));
         }
       });
       return acc;
@@ -199,19 +223,27 @@ export const Preview: React.FC<PreviewProps> = ({
 
     return Object.entries(config).some(([key, value]) => {
       // Ignorar la propiedad breakpoints
-      if (key === 'breakpoints') return false;
-      // Comparar con el valor por defecto
-      return initialConfig[key as keyof SplideConfig] !== value;
+      if (key === "breakpoints") return false;
+      // Comparar con el valor por defecto usando una comparación estricta
+      const defaultValue = initialConfig[key as keyof SplideConfig];
+      return JSON.stringify(defaultValue) !== JSON.stringify(value);
     });
   };
 
   const getBreakpointIcon = (width: number) => {
-    switch (width) {
-      case 1280:
+    // Buscar el breakpoint correspondiente al ancho
+    const bp = breakpoints.find((b) => b.width === width);
+
+    // Si no se encuentra el breakpoint, retornar null
+    if (!bp) return null;
+
+    // Usar la etiqueta para determinar qué icono mostrar
+    switch (bp.label) {
+      case "Laptop":
         return <Laptop className="h-4 w-4" />;
-      case 767:
+      case "Tablet":
         return <Tablet className="h-4 w-4" />;
-      case 480:
+      case "Mobile":
         return <Smartphone className="h-4 w-4" />;
       default:
         return null;
@@ -219,7 +251,7 @@ export const Preview: React.FC<PreviewProps> = ({
   };
 
   const getPreviewWidth = () => {
-    if (!activeBreakpoint) return '100%';
+    if (!activeBreakpoint) return "100%";
     return `${activeBreakpoint}px`;
   };
 
@@ -251,7 +283,9 @@ export const Preview: React.FC<PreviewProps> = ({
               <Tooltip key={bp.width}>
                 <TooltipTrigger asChild>
                   <Button
-                    variant={activeBreakpoint === bp.width ? "default" : "ghost"}
+                    variant={
+                      activeBreakpoint === bp.width ? "default" : "ghost"
+                    }
                     size="icon"
                     onClick={() => onBreakpointChange(bp.width)}
                     className="relative"
@@ -283,7 +317,7 @@ export const Preview: React.FC<PreviewProps> = ({
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                {isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+                {isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -299,17 +333,17 @@ export const Preview: React.FC<PreviewProps> = ({
       <div className="flex-1 overflow-y-auto">
         <section className="min-h-full flex items-center justify-center">
           <div className="max-w-screen-2xl mx-auto py-12 w-full px-6">
-            <div 
-              style={{ 
+            <div
+              style={{
                 width: getPreviewWidth(),
-                maxWidth: '100%'
+                maxWidth: "100%",
               }}
               className="mx-auto"
             >
-              <Splide 
+              <Splide
                 options={{
                   ...currentConfig,
-                  height: currentConfig.height || '100%'
+                  height: currentConfig.height || "100%",
                 }}
                 className="h-full"
                 key={`${activeBreakpoint}-${JSON.stringify(currentConfig)}`}
