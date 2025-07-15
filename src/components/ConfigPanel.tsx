@@ -2,6 +2,7 @@ import React from 'react';
 import { Info, RotateCcw } from 'lucide-react';
 import { configSections } from '../data/configSections';
 import { SplideConfig } from '../types/config';
+import { useLanguage } from '../contexts/LanguageContext';
 import { 
   Accordion, 
   AccordionContent, 
@@ -30,15 +31,16 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
   activeBreakpoint,
   className
 }) => {
-  const handleChange = (key: keyof SplideConfig, value: any) => {
+  const { t } = useLanguage();
+  const handleChange = (key: keyof SplideConfig, value: string | number | boolean) => {
     if (key === 'perPage' || key === 'perMove') {
-      value = Math.max(1, value);
+      value = Math.max(1, Number(value));
     }
 
     // Si el tipo cambia a fade, resetear perPage y perMove a 1
     if (key === 'type' && value === 'fade') {
       if (activeBreakpoint) {
-        const breakpointConfig = {
+        const breakpointConfig: Partial<SplideConfig> = {
           ...config.breakpoints?.[activeBreakpoint],
           [key]: value,
           perPage: 1,
@@ -70,7 +72,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
       };
       
       const cleanedConfig = Object.fromEntries(
-        Object.entries(breakpointConfig).filter(([_, v]) => v != null)
+        Object.entries(breakpointConfig).filter(([, v]) => v != null)
       );
       
       onChange({
@@ -165,18 +167,18 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
           [activeBreakpoint]: {}
         }
       });
-      toast.success(`Breakpoint ${activeBreakpoint}px reset successfully`);
+      toast.success(t('config.breakpoint_reset', { breakpoint: activeBreakpoint }));
     } else {
       // Reset all configuration
       onChange({ ...initialConfig });
-      toast.success('All settings reset to defaults');
+      toast.success(t('config.all_reset'));
     }
   };
 
   return (
     <div className={cn("w-80 bg-card border-r flex flex-col overflow-hidden", className)}>
       <div className="flex items-center justify-between px-4 py-3 border-b">
-        <h2 className="text-sm font-medium">Configuration</h2>
+        <h2 className="text-sm font-medium">{t('config.title')}</h2>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -187,13 +189,13 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
                 onClick={handleReset}
               >
                 <RotateCcw className="h-4 w-4" />
-                Reset
+                {t('config.reset')}
               </Button>
             </TooltipTrigger>
             <TooltipContent>
               {activeBreakpoint 
-                ? `Reset breakpoint ${activeBreakpoint}px settings` 
-                : 'Reset all settings to defaults'}
+                ? t('config.reset_breakpoint_tooltip', { breakpoint: activeBreakpoint })
+                : t('config.reset_all_tooltip')}
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -204,7 +206,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
           {configSections.map((section) => (
             <AccordionItem key={section.title} value={section.title}>
               <AccordionTrigger className="px-4">
-                <span className="text-sm font-medium">{section.title}</span>
+                <span className="text-sm font-medium">{t(section.title)}</span>
               </AccordionTrigger>
               <AccordionContent>
                 <div className="px-4 py-2 space-y-4">
@@ -212,7 +214,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
                     <div key={field.key} className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Label htmlFor={field.key} className="text-sm">
-                          {field.label}
+                          {t(field.label)}
                         </Label>
                         <TooltipProvider>
                           <Tooltip>
@@ -220,7 +222,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
                               <Info className="h-4 w-4 text-muted-foreground" />
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p className="text-sm">{field.description}</p>
+                              <p className="text-sm">{t(field.description)}</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -238,7 +240,10 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
                           onValueChange={(value) => {
                             if (field.optionValues) {
                               const index = field.options.indexOf(value);
-                              handleChange(field.key, field.optionValues[index]);
+                              const optionValue = field.optionValues[index];
+                              if (optionValue !== null && optionValue !== undefined) {
+                                handleChange(field.key, optionValue);
+                              }
                             } else {
                               handleChange(field.key, value);
                             }
@@ -250,7 +255,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
                           <SelectContent>
                             {field.options?.map((option) => (
                               <SelectItem key={option} value={option}>
-                                {option}
+                                {t(option)}
                               </SelectItem>
                             ))}
                           </SelectContent>

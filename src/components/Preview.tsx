@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import "@splidejs/react-splide/css";
 import { SplideConfig } from "../types/config";
+import { useLanguage } from "../contexts/LanguageContext";
 import { breakpoints } from "../data/breakpoints";
 import { Button } from "./ui/button";
 import {
@@ -18,6 +19,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 import { configSections } from "../data/configSections";
 
 interface PreviewProps {
@@ -26,6 +34,8 @@ interface PreviewProps {
   onBreakpointChange: (width: number | null) => void;
   isFullscreen: boolean;
   onFullscreenToggle: () => void;
+  totalSlides: number;
+  onTotalSlidesChange: (count: number) => void;
 }
 
 export const Preview: React.FC<PreviewProps> = ({
@@ -34,7 +44,10 @@ export const Preview: React.FC<PreviewProps> = ({
   onBreakpointChange,
   isFullscreen,
   onFullscreenToggle,
+  totalSlides,
+  onTotalSlidesChange,
 }) => {
+  const { t } = useLanguage();
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const slides = [
     "https://images.unsplash.com/photo-1469474968028-56623f02e42e",
@@ -69,25 +82,23 @@ export const Preview: React.FC<PreviewProps> = ({
 
   const getPaddingConfig = (cfg: Partial<SplideConfig>) => {
     const {
-      paddingType = "horizontal",
-      paddingUnit = "px",
       paddingLeft = 0,
       paddingRight = 0,
       paddingTop = 0,
       paddingBottom = 0,
     } = cfg;
 
-    if (paddingType === "horizontal" && (paddingLeft > 0 || paddingRight > 0)) {
+    if (paddingLeft > 0 || paddingRight > 0) {
       return {
-        left: formatPaddingValue(paddingLeft, paddingUnit),
-        right: formatPaddingValue(paddingRight, paddingUnit),
+        left: formatPaddingValue(paddingLeft, "px"),
+        right: formatPaddingValue(paddingRight, "px"),
       };
     }
 
-    if (paddingType === "vertical" && (paddingTop > 0 || paddingBottom > 0)) {
+    if (paddingTop > 0 || paddingBottom > 0) {
       return {
-        top: formatPaddingValue(paddingTop, paddingUnit),
-        bottom: formatPaddingValue(paddingBottom, paddingUnit),
+        top: formatPaddingValue(paddingTop, "px"),
+        bottom: formatPaddingValue(paddingBottom, "px"),
       };
     }
 
@@ -107,8 +118,6 @@ export const Preview: React.FC<PreviewProps> = ({
 
     // Limpiar propiedades de padding del config base
     const basePadding = getPaddingConfig(baseConfig);
-    delete baseConfig.paddingType;
-    delete baseConfig.paddingUnit;
     delete baseConfig.paddingLeft;
     delete baseConfig.paddingRight;
     delete baseConfig.paddingTop;
@@ -133,75 +142,69 @@ export const Preview: React.FC<PreviewProps> = ({
 
       // Procesar padding del breakpoint
       const breakpointPadding = getPaddingConfig({
-        paddingType: breakpointConfig.paddingType || baseConfig.paddingType,
-        paddingUnit: breakpointConfig.paddingUnit || baseConfig.paddingUnit,
-        paddingLeft: breakpointConfig.paddingLeft ?? baseConfig.paddingLeft,
-        paddingRight: breakpointConfig.paddingRight ?? baseConfig.paddingRight,
-        paddingTop: breakpointConfig.paddingTop ?? baseConfig.paddingTop,
-        paddingBottom:
-          breakpointConfig.paddingBottom ?? baseConfig.paddingBottom,
+        paddingLeft: breakpointConfig.paddingLeft,
+        paddingRight: breakpointConfig.paddingRight,
+        paddingTop: breakpointConfig.paddingTop,
+        paddingBottom: breakpointConfig.paddingBottom,
       });
 
       // Limpiar propiedades de padding del breakpoint
       const cleanBreakpointConfig = { ...breakpointConfig };
-      delete cleanBreakpointConfig.paddingType;
-      delete cleanBreakpointConfig.paddingUnit;
       delete cleanBreakpointConfig.paddingLeft;
       delete cleanBreakpointConfig.paddingRight;
       delete cleanBreakpointConfig.paddingTop;
       delete cleanBreakpointConfig.paddingBottom;
 
+      if (breakpointPadding) {
+        cleanBreakpointConfig.padding = breakpointPadding;
+      }
+
       return {
         ...baseConfig,
-        ...cleanBreakpointConfig,
-        ...(breakpointPadding ? { padding: breakpointPadding } : {}),
+        breakpoints: {
+          [activeBreakpoint]: cleanBreakpointConfig,
+        },
       };
     }
 
-    const applicableBreakpoints = Object.entries(config.breakpoints)
-      .map(([width, cfg]) => ({ width: Number(width), config: cfg }))
-      .filter(({ width }) => windowWidth <= width)
-      .sort((a, b) => b.width - a.width);
-
-    if (applicableBreakpoints.length > 0) {
-      const breakpointConfig = applicableBreakpoints[0].config;
+    // Si hay breakpoints pero no hay uno activo, incluir todos
+    const processedBreakpoints: Record<number, any> = {};
+    Object.entries(config.breakpoints).forEach(([width, breakpointConfig]) => {
+      const cleanBreakpointConfig = { ...breakpointConfig };
 
       // Mantener width y height del breakpoint si existen
-      if (breakpointConfig.width) {
-        breakpointConfig.width = String(breakpointConfig.width);
+      if (cleanBreakpointConfig.width) {
+        cleanBreakpointConfig.width = String(cleanBreakpointConfig.width);
       }
-      if (breakpointConfig.height) {
-        breakpointConfig.height = String(breakpointConfig.height);
+      if (cleanBreakpointConfig.height) {
+        cleanBreakpointConfig.height = String(cleanBreakpointConfig.height);
       }
 
       // Procesar padding del breakpoint
       const breakpointPadding = getPaddingConfig({
-        paddingType: breakpointConfig.paddingType || baseConfig.paddingType,
-        paddingUnit: breakpointConfig.paddingUnit || baseConfig.paddingUnit,
-        paddingLeft: breakpointConfig.paddingLeft ?? baseConfig.paddingLeft,
-        paddingRight: breakpointConfig.paddingRight ?? baseConfig.paddingRight,
-        paddingTop: breakpointConfig.paddingTop ?? baseConfig.paddingTop,
-        paddingBottom:
-          breakpointConfig.paddingBottom ?? baseConfig.paddingBottom,
+        paddingLeft: breakpointConfig.paddingLeft,
+        paddingRight: breakpointConfig.paddingRight,
+        paddingTop: breakpointConfig.paddingTop,
+        paddingBottom: breakpointConfig.paddingBottom,
       });
 
       // Limpiar propiedades de padding del breakpoint
-      const cleanBreakpointConfig = { ...breakpointConfig };
-      delete cleanBreakpointConfig.paddingType;
-      delete cleanBreakpointConfig.paddingUnit;
       delete cleanBreakpointConfig.paddingLeft;
       delete cleanBreakpointConfig.paddingRight;
       delete cleanBreakpointConfig.paddingTop;
       delete cleanBreakpointConfig.paddingBottom;
 
-      return {
-        ...baseConfig,
-        ...cleanBreakpointConfig,
-        ...(breakpointPadding ? { padding: breakpointPadding } : {}),
-      };
-    }
+      if (breakpointPadding) {
+        cleanBreakpointConfig.padding = breakpointPadding;
+      }
 
-    return baseConfig;
+      processedBreakpoints[parseInt(width)] = cleanBreakpointConfig;
+    });
+
+    return {
+      ...baseConfig,
+      breakpoints: processedBreakpoints,
+    };
   };
 
   const hasBreakpointChanges = (width: number) => {
@@ -257,6 +260,17 @@ export const Preview: React.FC<PreviewProps> = ({
 
   const currentConfig = getCurrentConfig();
 
+  // Obtener el ancho actual para mostrar en la interfaz
+  const getCurrentWidth = () => {
+    if (activeBreakpoint) {
+      return `${activeBreakpoint}px`;
+    }
+    return `${windowWidth}px`;
+  };
+
+  // Obtener solo los slides necesarios según la selección del usuario
+  const selectedSlides = slides.slice(0, totalSlides);
+
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-background">
       <div className="bg-card border-b px-4 py-2">
@@ -266,48 +280,49 @@ export const Preview: React.FC<PreviewProps> = ({
               <TooltipTrigger asChild>
                 <Button
                   variant={activeBreakpoint === null ? "default" : "ghost"}
-                  size="icon"
+                  size="sm"
                   onClick={() => onBreakpointChange(null)}
-                  className="relative"
+                  className="h-8 px-2"
                 >
                   <Monitor className="h-4 w-4" />
-                  {hasBaseConfigChanges() && (
-                    <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-yellow-400 rounded-full" />
-                  )}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Default (All sizes)</TooltipContent>
+              <TooltipContent>{t("preview.desktop")}</TooltipContent>
             </Tooltip>
+          </TooltipProvider>
 
-            {breakpoints.map((bp) => (
-              <Tooltip key={bp.width}>
+          {breakpoints.map((bp) => (
+            <TooltipProvider key={bp.width}>
+              <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     variant={
                       activeBreakpoint === bp.width ? "default" : "ghost"
                     }
-                    size="icon"
+                    size="sm"
                     onClick={() => onBreakpointChange(bp.width)}
-                    className="relative"
+                    className="h-8 px-2"
                   >
-                    {getBreakpointIcon(bp.width)}
-                    {hasBreakpointChanges(bp.width) && (
-                      <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-yellow-400 rounded-full" />
-                    )}
+                    {bp.width === 1280 && <Laptop className="h-4 w-4" />}
+                    {bp.width === 767 && <Tablet className="h-4 w-4" />}
+                    {bp.width === 480 && <Smartphone className="h-4 w-4" />}
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>{`${bp.label} (≤ ${bp.width}px)`}</TooltipContent>
+                <TooltipContent>
+                  {bp.label} ({bp.width}px)
+                </TooltipContent>
               </Tooltip>
-            ))}
+            </TooltipProvider>
+          ))}
 
-            <div className="h-4 w-px bg-border mx-2" />
-
+          <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
-                  size="icon"
+                  size="sm"
                   onClick={onFullscreenToggle}
+                  className="h-8 px-2 ml-2"
                 >
                   {isFullscreen ? (
                     <Minimize2 className="h-4 w-4" />
@@ -317,14 +332,47 @@ export const Preview: React.FC<PreviewProps> = ({
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                {isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+                {isFullscreen
+                  ? t("preview.exitFullscreen")
+                  : t("preview.fullscreen")}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
 
-          <div className="ml-auto">
+          {/* Selector de número de slides */}
+          <div className="ml-4 flex items-center gap-2">
             <span className="text-sm text-muted-foreground">
-              Width: {windowWidth}px
+              {t("preview.totalSlides")}:
+            </span>
+            <Select
+              value={totalSlides.toString()}
+              onValueChange={(value) => onTotalSlidesChange(parseInt(value))}
+            >
+              <SelectTrigger className="w-16 h-8">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {[3, 4, 5, 6, 7, 8, 9, 10, 12, 15].map((count) => (
+                  <SelectItem key={count} value={count.toString()}>
+                    {count}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="ml-auto flex items-center gap-4">
+            {currentConfig.pagination && (
+              <span className="text-xs text-muted-foreground">
+                {t('preview.paginationInfo', {
+                  dots: Math.ceil(totalSlides / (currentConfig.perPage || 1)),
+                  slides: totalSlides,
+                  perPage: currentConfig.perPage || 1
+                })}
+              </span>
+            )}
+            <span className="text-sm text-muted-foreground">
+              Width: {getCurrentWidth()}
             </span>
           </div>
         </div>
@@ -344,17 +392,29 @@ export const Preview: React.FC<PreviewProps> = ({
                 options={{
                   ...currentConfig,
                   height: currentConfig.height || "100%",
+                  pagination: currentConfig.pagination !== false,
+                  start: currentConfig.start || 0,
                 }}
                 className="h-full"
-                key={`${activeBreakpoint}-${JSON.stringify(currentConfig)}`}
+                key={`${activeBreakpoint}-${totalSlides}-${JSON.stringify(
+                  currentConfig
+                )}`}
               >
-                {slides.map((slide, index) => (
-                  <SplideSlide key={index} className="h-full">
-                    <img
-                      src={slide}
-                      alt={`Slide ${index + 1}`}
-                      className="w-full h-full object-cover rounded-lg"
-                    />
+                {selectedSlides.map((slide, index) => (
+                  <SplideSlide key={index}>
+                    <div className="relative h-full">
+                      <img
+                        src={slide}
+                        alt={`Slide ${index + 1}`}
+                        className="w-full h-full object-cover rounded-lg"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center rounded-lg">
+                        <span className="text-white text-2xl font-bold bg-black bg-opacity-50 px-4 py-2 rounded">
+                          {index + 1}
+                        </span>
+                      </div>
+                    </div>
                   </SplideSlide>
                 ))}
               </Splide>

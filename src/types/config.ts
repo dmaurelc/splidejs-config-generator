@@ -49,10 +49,24 @@ export interface SplideConfig {
   // Keyboard Navigation
   keyboard?: boolean | 'global';
   
+  // Transiciones y Animaciones
+  easing?: string;
+  dragMode?: boolean | 'free';
+  snap?: boolean;
+  flickPower?: number;
+  flickMaxPages?: number;
+
+  // Performance y Lazy Loading
+  lazyLoad?: boolean | 'nearby' | 'sequential';
+  preloadPages?: number;
+  waitForTransition?: boolean;
+
+  // Clones (Modo Loop)
+  clones?: number;
+  cloneStatus?: boolean;
+
   // Breakpoints
-  breakpoints?: {
-    [key: number]: Partial<SplideConfig>;
-  };
+  breakpoints?: { [key: number]: Partial<SplideConfig> };
 }
 
 export interface Breakpoint {

@@ -4,6 +4,7 @@ import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 import json from "react-syntax-highlighter/dist/esm/languages/hljs/json";
 import { vs2015 } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { SplideConfig } from "../types/config";
+import { useLanguage } from "../contexts/LanguageContext";
 import { Button } from "./ui/button";
 import {
   TooltipProvider,
@@ -27,6 +28,7 @@ export const CodeOutput: React.FC<CodeOutputProps> = ({
   className,
   onChange,
 }) => {
+  const { t } = useLanguage();
   const [isCopied, setIsCopied] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editableCode, setEditableCode] = useState("");
@@ -65,6 +67,55 @@ export const CodeOutput: React.FC<CodeOutputProps> = ({
   };
 
   const cleanConfig = (cfg: SplideConfig): SplideConfig => {
+    // Configuración base que siempre debe aparecer
+    const baseConfig = {
+      type: "loop",
+      height: "400px",
+      perPage: 3,
+      perMove: 1,
+      gap: "1rem",
+      arrows: true,
+      pagination: true,
+      drag: true,
+      rewind: false,
+    };
+
+    // Valores por defecto de Splide (para filtrar opciones adicionales)
+    const defaultValues: Record<string, any> = {
+      type: "slide",
+      height: "auto",
+      perPage: 1,
+      perMove: 1,
+      gap: 0,
+      focus: 0,
+      direction: "ltr",
+      start: 0,
+      speed: 400,
+      interval: 5000,
+      autoplay: false,
+      pauseOnHover: true,
+      pauseOnFocus: true,
+      arrows: true,
+      pagination: true,
+      drag: true,
+      rewind: false,
+      rewindByDrag: false,
+      rewindSpeed: 400,
+      easing: "cubic-bezier(0.25, 1, 0.5, 1)",
+      snap: false,
+      flickPower: 600,
+      flickMaxPages: 1,
+      lazyLoad: false,
+      preloadPages: 1,
+      waitForTransition: false,
+      cloneStatus: true,
+      keyboard: false,
+      isNavigation: false,
+      trimSpace: true,
+      updateOnMove: false,
+      destroy: false,
+    };
+
     // Usar Record<string, unknown> para mayor flexibilidad con los tipos
     const cleaned: Record<string, unknown> = {};
 
@@ -75,11 +126,24 @@ export const CodeOutput: React.FC<CodeOutputProps> = ({
         return;
       }
 
+      // Manejar dragMode especialmente - convertir a drag
+      if (key === "dragMode") {
+        if (value === true) {
+          cleaned.drag = true;
+        } else if (value === "free") {
+          cleaned.drag = "free";
+        }
+        return;
+      }
+
       // No incluir propiedades de padding raw excepto padding ya formateado
       if (
         (key === "padding" || !key.startsWith("padding")) &&
         key !== "breakpoints" &&
-        value !== undefined
+        key !== "dragMode" &&
+        value !== undefined &&
+        (Object.prototype.hasOwnProperty.call(baseConfig, key) ||
+          value !== defaultValues[key]) // Incluir si está en baseConfig O es diferente al valor por defecto
       ) {
         cleaned[key] = value;
       }
@@ -104,9 +168,20 @@ export const CodeOutput: React.FC<CodeOutputProps> = ({
             return;
           }
 
+          // Manejar dragMode especialmente en breakpoints
+          if (key === "dragMode") {
+            if (value === true) {
+              cleanedBreakpointConfig.drag = true;
+            } else if (value === "free") {
+              cleanedBreakpointConfig.drag = "free";
+            }
+            return;
+          }
+
           // Filtrar propiedades de padding raw excepto padding ya formateado
           if (
             (key === "padding" || !key.startsWith("padding")) &&
+            key !== "dragMode" &&
             value !== undefined
           ) {
             cleanedBreakpointConfig[key] = value;
@@ -156,12 +231,12 @@ export const CodeOutput: React.FC<CodeOutputProps> = ({
       }
       setIsEditing(false);
       setError(null);
-      toast.success("Configuración actualizada correctamente", {
+      toast.success(t("code.config_updated"), {
         duration: 2000,
       });
     } catch (err) {
       setError("Error al parsear JSON: " + (err as Error).message);
-      toast.error("Error al parsear JSON", {
+      toast.error(t("code.json_error"), {
         duration: 2000,
       });
     }
@@ -177,7 +252,7 @@ export const CodeOutput: React.FC<CodeOutputProps> = ({
   const copyToClipboard = async () => {
     await navigator.clipboard.writeText(formattedCode);
     setIsCopied(true);
-    toast.success("Configuration copied to clipboard!", {
+    toast.success(t("code.copied"), {
       duration: 2000,
     });
     setTimeout(() => setIsCopied(false), 2000);
@@ -191,7 +266,7 @@ export const CodeOutput: React.FC<CodeOutputProps> = ({
       )}
     >
       <div className="flex items-center justify-between px-4 py-3 border-b">
-        <h2 className="text-sm font-medium">Generated Code</h2>
+        <h2 className="text-sm font-medium">{t("code.title")}</h2>
         <div className="flex gap-2">
           {!isEditing ? (
             <>
@@ -205,10 +280,10 @@ export const CodeOutput: React.FC<CodeOutputProps> = ({
                       onClick={() => setIsEditing(true)}
                     >
                       <Edit className="h-4 w-4" />
-                      <span className="sr-only">Editar</span>
+                      <span className="sr-only">{t("code.edit")}</span>
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Editar JSON</TooltipContent>
+                  <TooltipContent>{t("code.edit")}</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
               <TooltipProvider>
@@ -239,10 +314,10 @@ export const CodeOutput: React.FC<CodeOutputProps> = ({
                           <Check className="h-4 w-4 text-green-500" />
                         </span>
                       </div>
-                      {isCopied ? "Copiado" : "Copiar"}
+                      {isCopied ? t("code.copied") : t("code.copy")}
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Copiar al portapapeles</TooltipContent>
+                  <TooltipContent>{t("code.copy")}</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </>
@@ -258,10 +333,10 @@ export const CodeOutput: React.FC<CodeOutputProps> = ({
                       onClick={applyChanges}
                     >
                       <Save className="h-4 w-4" />
-                      <span className="sr-only">Guardar</span>
+                      <span className="sr-only">{t("code.save")}</span>
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Guardar cambios</TooltipContent>
+                  <TooltipContent>{t("code.save")}</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
               <TooltipProvider>
@@ -274,10 +349,10 @@ export const CodeOutput: React.FC<CodeOutputProps> = ({
                       onClick={cancelEditing}
                     >
                       <X className="h-4 w-4" />
-                      <span className="sr-only">Cancelar</span>
+                      <span className="sr-only">{t("code.cancel")}</span>
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Cancelar edición</TooltipContent>
+                  <TooltipContent>{t("code.cancel")}</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </>
