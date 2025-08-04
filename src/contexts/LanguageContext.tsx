@@ -48,7 +48,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
 const translations = {
   es: {
     // Header
-    "app.title": "Generador de Configuración SplideJS",
+    "app.title": "SplideJS",
     "language.selector": "Idioma",
 
     // Config Sections
@@ -65,6 +65,7 @@ const translations = {
     "section.advanced": "Opciones Avanzadas",
 
     // Preview
+    "preview.title": "Vista Previa",
     "preview.desktop": "Escritorio",
     "preview.laptop": "Laptop",
     "preview.tablet": "Tablet",
@@ -249,7 +250,7 @@ const translations = {
   },
   en: {
     // Header
-    "app.title": "SplideJS Configuration Generator",
+    "app.title": "SplideJS",
     "language.selector": "Language",
 
     // Config Sections
@@ -266,6 +267,7 @@ const translations = {
     "section.advanced": "Advanced Options",
 
     // Preview
+    "preview.title": "Preview",
     "preview.desktop": "Desktop",
     "preview.laptop": "Laptop",
     "preview.tablet": "Tablet",

@@ -261,7 +261,7 @@ export const CodeOutput: React.FC<CodeOutputProps> = ({
   return (
     <div
       className={cn(
-        "w-80 bg-card border-l flex flex-col overflow-hidden",
+        "w-full md:w-80 bg-card border-l flex flex-col overflow-hidden h-full",
         className
       )}
     >

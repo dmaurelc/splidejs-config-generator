@@ -3,8 +3,12 @@ import { ConfigPanel } from "./ConfigPanel";
 import { Preview } from "./Preview";
 import { CodeOutput } from "./CodeOutput";
 import { LanguageSelector } from "./LanguageSelector";
+import { MobileToggle } from "./MobileToggle";
+import { MobileTabs, MobileTabType } from "./MobileTabs";
+import { MobileSidebar } from "./MobileSidebar";
 import { SplideConfig } from "../types/config";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useIsMobile } from "../hooks/useIsMobile";
 
 const initialConfig: SplideConfig = {
   type: "loop",
@@ -23,11 +27,92 @@ export const AppContent: React.FC = () => {
   const [activeBreakpoint, setActiveBreakpoint] = useState<number | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [totalSlides, setTotalSlides] = useState(8);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<MobileTabType>("preview");
   const { t } = useLanguage();
+  const isMobile = useIsMobile();
 
+  // Cerrar sidebar cuando se cambia a desktop
+  React.useEffect(() => {
+    if (!isMobile && isSidebarOpen) {
+      setIsSidebarOpen(false);
+    }
+  }, [isMobile, isSidebarOpen]);
+
+  if (isMobile) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col h-screen">
+        {/* Mobile Sidebar */}
+        <MobileSidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          config={config}
+          onChange={setConfig}
+          activeBreakpoint={activeBreakpoint}
+        />
+
+        <div className="flex-1 flex flex-col h-full">
+          {/* Mobile Header */}
+          <header className="bg-card border-b px-4 py-3 flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <MobileToggle
+                isOpen={isSidebarOpen}
+                onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
+              />
+              <h1 className="text-lg font-semibold">{t("app.title")}</h1>
+            </div>
+            <LanguageSelector />
+          </header>
+
+          {/* Mobile Tabs */}
+          <div className="px-4 py-3 border-b">
+            <MobileTabs activeTab={activeTab} onTabChange={setActiveTab} />
+          </div>
+
+          {/* Mobile Content */}
+          <main className="flex-1 overflow-hidden h-full">
+            {activeTab === "preview" ? (
+              <Preview
+                config={config}
+                activeBreakpoint={activeBreakpoint}
+                onBreakpointChange={setActiveBreakpoint}
+                isFullscreen={false}
+                onFullscreenToggle={() => {}}
+                totalSlides={totalSlides}
+                onTotalSlidesChange={setTotalSlides}
+              />
+            ) : (
+              <div className="h-full">
+                <CodeOutput
+                  config={config}
+                  onChange={setConfig}
+                  className="h-full"
+                />
+              </div>
+            )}
+          </main>
+
+          {/* Mobile Footer */}
+          <footer className="bg-card border-t px-4 py-2 text-center text-xs text-muted-foreground">
+            Made with 🤘 by{" "}
+            <a
+              href="https://github.com/dmaurelc"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              Daniel MC.
+            </a>
+          </footer>
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop Layout
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <div className="flex-1 flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col h-screen">
+      <div className="flex-1 flex flex-col h-full">
         <header
           className={`bg-card border-b px-6 py-4 flex justify-between items-center ${
             isFullscreen ? "hidden" : ""
@@ -37,7 +122,7 @@ export const AppContent: React.FC = () => {
           <LanguageSelector />
         </header>
 
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex overflow-hidden h-full">
           <ConfigPanel
             config={config}
             onChange={setConfig}
@@ -59,7 +144,7 @@ export const AppContent: React.FC = () => {
 
           <CodeOutput
             config={config}
-            className={isFullscreen ? "hidden" : ""}
+            className={isFullscreen ? "hidden" : "h-full"}
             onChange={setConfig}
           />
         </div>
@@ -70,14 +155,14 @@ export const AppContent: React.FC = () => {
           isFullscreen ? "hidden" : ""
         }`}
       >
-        Made with ❤️ by{" "}
+        Made with 🤘 by{" "}
         <a
           href="https://github.com/dmaurelc"
           target="_blank"
           rel="noopener noreferrer"
           className="text-primary hover:underline"
         >
-          Daniel Maurel
+          Daniel MC.
         </a>
       </footer>
     </div>
