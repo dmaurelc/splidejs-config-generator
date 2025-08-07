@@ -75,6 +75,8 @@ const translations = {
     "preview.exitFullscreen": "Salir de pantalla completa",
     "preview.paginationInfo":
       "{dots} dots ({slides} slides, {perPage} por página)",
+    "preview.mobileMessage":
+      "Para un mayor control de breakpoints, ingresa desde desktop.",
 
     // Basic Options
     "field.type": "Tipo",
@@ -277,6 +279,8 @@ const translations = {
     "preview.exitFullscreen": "Exit fullscreen",
     "preview.paginationInfo":
       "{dots} dots ({slides} slides, {perPage} per page)",
+    "preview.mobileMessage":
+      "For more breakpoint control, access from desktop.",
 
     // Basic Options
     "field.type": "Type",

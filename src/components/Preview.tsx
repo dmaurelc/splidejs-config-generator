@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "./ui/select";
 import { configSections } from "../data/configSections";
+import { useIsMobile } from "../hooks/useIsMobile";
 
 interface PreviewProps {
   config: SplideConfig;
@@ -48,6 +49,7 @@ export const Preview: React.FC<PreviewProps> = ({
   onTotalSlidesChange,
 }) => {
   const { t } = useLanguage();
+  const isMobile = useIsMobile();
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const slides = [
     "https://images.unsplash.com/photo-1469474968028-56623f02e42e",
@@ -274,48 +276,53 @@ export const Preview: React.FC<PreviewProps> = ({
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-background">
       <div className="bg-card border-b px-4 py-2">
-        <div className="flex items-center gap-1.5">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant={activeBreakpoint === null ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => onBreakpointChange(null)}
-                  className="h-8 px-2"
-                >
-                  <Monitor className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>{t("preview.desktop")}</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          {breakpoints.map((bp) => (
-            <TooltipProvider key={bp.width}>
+        {isMobile ? (
+          <div className="text-center text-xs text-muted-foreground py-2 text-balance">
+            {t("preview.mobileMessage")}
+          </div>
+        ) : (
+          <div className="flex items-center gap-1.5">
+            <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    variant={
-                      activeBreakpoint === bp.width ? "default" : "ghost"
-                    }
+                    variant={activeBreakpoint === null ? "default" : "ghost"}
                     size="sm"
-                    onClick={() => onBreakpointChange(bp.width)}
+                    onClick={() => onBreakpointChange(null)}
                     className="h-8 px-2"
                   >
-                    {bp.width === 1280 && <Laptop className="h-4 w-4" />}
-                    {bp.width === 767 && <Tablet className="h-4 w-4" />}
-                    {bp.width === 480 && <Smartphone className="h-4 w-4" />}
+                    <Monitor className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>
-                  {bp.label} ({bp.width}px)
-                </TooltipContent>
+                <TooltipContent>{t("preview.desktop")}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
-          ))}
 
-          <TooltipProvider>
+            {breakpoints.map((bp) => (
+              <TooltipProvider key={bp.width}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={
+                        activeBreakpoint === bp.width ? "default" : "ghost"
+                      }
+                      size="sm"
+                      onClick={() => onBreakpointChange(bp.width)}
+                      className="h-8 px-2"
+                    >
+                      {bp.width === 1280 && <Laptop className="h-4 w-4" />}
+                      {bp.width === 767 && <Tablet className="h-4 w-4" />}
+                      {bp.width === 480 && <Smartphone className="h-4 w-4" />}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {bp.label} ({bp.width}px)
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ))}
+
+            <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -340,42 +347,47 @@ export const Preview: React.FC<PreviewProps> = ({
           </TooltipProvider>
 
           {/* Selector de número de slides */}
-          <div className="ml-4 flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">
-              {t("preview.totalSlides")}:
-            </span>
-            <Select
-              value={totalSlides.toString()}
-              onValueChange={(value) => onTotalSlidesChange(parseInt(value))}
-            >
-              <SelectTrigger className="w-16 h-8">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {[3, 4, 5, 6, 7, 8, 9, 10, 12, 15].map((count) => (
-                  <SelectItem key={count} value={count.toString()}>
-                    {count}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="ml-auto flex items-center gap-4">
-            {currentConfig.pagination && (
-              <span className="text-xs text-muted-foreground">
-                {t('preview.paginationInfo', {
-                  dots: Math.ceil(totalSlides / (currentConfig.perPage || 1)),
-                  slides: totalSlides,
-                  perPage: currentConfig.perPage || 1
-                })}
+          {!isMobile && (
+            <div className="ml-4 flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">
+                {t("preview.totalSlides")}:
               </span>
-            )}
-            <span className="text-sm text-muted-foreground">
-              Width: {getCurrentWidth()}
-            </span>
+              <Select
+                value={totalSlides.toString()}
+                onValueChange={(value) => onTotalSlidesChange(parseInt(value))}
+              >
+                <SelectTrigger className="w-16 h-8">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[3, 4, 5, 6, 7, 8, 9, 10, 12, 15].map((count) => (
+                    <SelectItem key={count} value={count.toString()}>
+                      {count}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {!isMobile && (
+            <div className="ml-auto flex items-center gap-4">
+              {currentConfig.pagination && (
+                <span className="text-xs text-muted-foreground">
+                  {t('preview.paginationInfo', {
+                    dots: Math.ceil(totalSlides / (currentConfig.perPage || 1)),
+                    slides: totalSlides,
+                    perPage: currentConfig.perPage || 1
+                  })}
+                </span>
+              )}
+              <span className="text-sm text-muted-foreground">
+                Width: {getCurrentWidth()}
+              </span>
+            </div>
+          )}
           </div>
-        </div>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto">
