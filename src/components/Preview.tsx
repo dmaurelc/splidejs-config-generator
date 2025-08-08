@@ -129,19 +129,10 @@ export const Preview: React.FC<PreviewProps> = ({
       baseConfig.padding = basePadding;
     }
 
-    if (!config.breakpoints) return baseConfig;
-
-    if (activeBreakpoint && config.breakpoints[activeBreakpoint]) {
+    // Si hay un breakpoint activo, aplicar su configuración directamente al config base
+    if (activeBreakpoint && config.breakpoints?.[activeBreakpoint]) {
       const breakpointConfig = config.breakpoints[activeBreakpoint];
-
-      // Mantener width y height del breakpoint si existen
-      if (breakpointConfig.width) {
-        breakpointConfig.width = String(breakpointConfig.width);
-      }
-      if (breakpointConfig.height) {
-        breakpointConfig.height = String(breakpointConfig.height);
-      }
-
+      
       // Procesar padding del breakpoint
       const breakpointPadding = getPaddingConfig({
         paddingLeft: breakpointConfig.paddingLeft,
@@ -150,7 +141,7 @@ export const Preview: React.FC<PreviewProps> = ({
         paddingBottom: breakpointConfig.paddingBottom,
       });
 
-      // Limpiar propiedades de padding del breakpoint
+      // Crear una copia limpia del breakpoint config
       const cleanBreakpointConfig = { ...breakpointConfig };
       delete cleanBreakpointConfig.paddingLeft;
       delete cleanBreakpointConfig.paddingRight;
@@ -161,52 +152,68 @@ export const Preview: React.FC<PreviewProps> = ({
         cleanBreakpointConfig.padding = breakpointPadding;
       }
 
-      return {
+      // Aplicar la configuración del breakpoint directamente
+      const mergedConfig = {
         ...baseConfig,
-        breakpoints: {
-          [activeBreakpoint]: cleanBreakpointConfig,
-        },
+        ...cleanBreakpointConfig,
       };
-    }
-
-    // Si hay breakpoints pero no hay uno activo, incluir todos
-    const processedBreakpoints: Record<number, any> = {};
-    Object.entries(config.breakpoints).forEach(([width, breakpointConfig]) => {
-      const cleanBreakpointConfig = { ...breakpointConfig };
 
       // Mantener width y height del breakpoint si existen
       if (cleanBreakpointConfig.width) {
-        cleanBreakpointConfig.width = String(cleanBreakpointConfig.width);
+        mergedConfig.width = String(cleanBreakpointConfig.width);
       }
       if (cleanBreakpointConfig.height) {
-        cleanBreakpointConfig.height = String(cleanBreakpointConfig.height);
+        mergedConfig.height = String(cleanBreakpointConfig.height);
       }
 
-      // Procesar padding del breakpoint
-      const breakpointPadding = getPaddingConfig({
-        paddingLeft: breakpointConfig.paddingLeft,
-        paddingRight: breakpointConfig.paddingRight,
-        paddingTop: breakpointConfig.paddingTop,
-        paddingBottom: breakpointConfig.paddingBottom,
+      // No incluir breakpoints cuando estamos previsualizando un breakpoint específico
+      delete mergedConfig.breakpoints;
+      
+      return mergedConfig;
+    }
+
+    // Si no hay breakpoint activo, incluir todos los breakpoints para responsive
+    if (config.breakpoints && Object.keys(config.breakpoints).length > 0) {
+      const processedBreakpoints: Record<number, any> = {};
+      Object.entries(config.breakpoints).forEach(([width, breakpointConfig]) => {
+        const cleanBreakpointConfig = { ...breakpointConfig };
+
+        // Mantener width y height del breakpoint si existen
+        if (cleanBreakpointConfig.width) {
+          cleanBreakpointConfig.width = String(cleanBreakpointConfig.width);
+        }
+        if (cleanBreakpointConfig.height) {
+          cleanBreakpointConfig.height = String(cleanBreakpointConfig.height);
+        }
+
+        // Procesar padding del breakpoint
+        const breakpointPadding = getPaddingConfig({
+          paddingLeft: breakpointConfig.paddingLeft,
+          paddingRight: breakpointConfig.paddingRight,
+          paddingTop: breakpointConfig.paddingTop,
+          paddingBottom: breakpointConfig.paddingBottom,
+        });
+
+        // Limpiar propiedades de padding del breakpoint
+        delete cleanBreakpointConfig.paddingLeft;
+        delete cleanBreakpointConfig.paddingRight;
+        delete cleanBreakpointConfig.paddingTop;
+        delete cleanBreakpointConfig.paddingBottom;
+
+        if (breakpointPadding) {
+          cleanBreakpointConfig.padding = breakpointPadding;
+        }
+
+        processedBreakpoints[parseInt(width)] = cleanBreakpointConfig;
       });
 
-      // Limpiar propiedades de padding del breakpoint
-      delete cleanBreakpointConfig.paddingLeft;
-      delete cleanBreakpointConfig.paddingRight;
-      delete cleanBreakpointConfig.paddingTop;
-      delete cleanBreakpointConfig.paddingBottom;
+      return {
+        ...baseConfig,
+        breakpoints: processedBreakpoints,
+      };
+    }
 
-      if (breakpointPadding) {
-        cleanBreakpointConfig.padding = breakpointPadding;
-      }
-
-      processedBreakpoints[parseInt(width)] = cleanBreakpointConfig;
-    });
-
-    return {
-      ...baseConfig,
-      breakpoints: processedBreakpoints,
-    };
+    return baseConfig;
   };
 
   const hasBreakpointChanges = (width: number) => {

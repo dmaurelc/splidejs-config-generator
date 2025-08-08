@@ -1,7 +1,7 @@
 import React from 'react';
 import { Info, RotateCcw } from 'lucide-react';
 import { configSections } from '../data/configSections';
-import { SplideConfig } from '../types/config';
+import { SplideConfig, ConfigField } from '../types/config';
 import { useLanguage } from '../contexts/LanguageContext';
 import { 
   Accordion, 
@@ -32,7 +32,134 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
   className
 }) => {
   const { t } = useLanguage();
-  const handleChange = (key: keyof SplideConfig, value: string | number | boolean) => {
+  // Función para ajustar valores automáticamente según el breakpoint
+  const getSmartValue = (key: keyof SplideConfig, originalValue: any, targetBreakpoint: number): any => {
+    if (key === 'perPage' && typeof originalValue === 'number') {
+      // Ajustar perPage según el tamaño de pantalla
+      if (targetBreakpoint <= 480) { // Mobile
+        return Math.min(originalValue, 2); // Máximo 2 en mobile
+      } else if (targetBreakpoint <= 767) { // Tablet
+        return Math.min(originalValue, 3); // Máximo 3 en tablet
+      } else if (targetBreakpoint <= 1280) { // Laptop
+        return Math.min(originalValue, Math.max(3, originalValue - 1)); // Reducir en 1 pero mínimo 3
+      }
+    }
+    
+    if (key === 'perMove' && typeof originalValue === 'number') {
+      // perMove nunca debe ser mayor que perPage
+      const adjustedPerPage = getSmartValue('perPage', getCurrentValue('perPage', 3), targetBreakpoint);
+      return Math.min(originalValue, adjustedPerPage);
+    }
+    
+    if (key === 'gap' && typeof originalValue === 'string') {
+      // Reducir gap en pantallas más pequeñas
+      const numValue = parseFloat(originalValue);
+      if (!isNaN(numValue)) {
+        const unit = originalValue.replace(numValue.toString(), '');
+        if (targetBreakpoint <= 480) { // Mobile
+          return `${Math.max(0.5, numValue * 0.6)}${unit}`;
+        } else if (targetBreakpoint <= 767) { // Tablet
+          return `${Math.max(0.75, numValue * 0.8)}${unit}`;
+        }
+      }
+    }
+    
+    // Ajustar dimensiones (width, height) para pantallas más pequeñas
+    if ((key === 'width' || key === 'height') && typeof originalValue === 'string') {
+      const numValue = parseFloat(originalValue);
+      if (!isNaN(numValue)) {
+        const unit = originalValue.replace(numValue.toString(), '');
+        // Solo ajustar si la unidad es px, rem, o em (no porcentajes o viewport units)
+        if (['px', 'rem', 'em'].includes(unit)) {
+          if (targetBreakpoint <= 480) { // Mobile
+            return `${Math.max(200, numValue * 0.7)}${unit}`;
+          } else if (targetBreakpoint <= 767) { // Tablet
+            return `${Math.max(250, numValue * 0.85)}${unit}`;
+          }
+        }
+      }
+    }
+    
+    // Ajustar padding para pantallas más pequeñas
+    if (['paddingLeft', 'paddingRight', 'paddingTop', 'paddingBottom'].includes(key) && typeof originalValue === 'number') {
+      if (targetBreakpoint <= 480) { // Mobile
+        return Math.max(0, Math.floor(originalValue * 0.6));
+      } else if (targetBreakpoint <= 767) { // Tablet
+        return Math.max(0, Math.floor(originalValue * 0.8));
+      }
+    }
+    
+    // Ajustar velocidades para pantallas más pequeñas (más rápido en móvil)
+    if ((key === 'speed' || key === 'rewindSpeed') && typeof originalValue === 'number') {
+      if (targetBreakpoint <= 480) { // Mobile
+        return Math.max(200, Math.floor(originalValue * 0.8)); // Más rápido en móvil
+      } else if (targetBreakpoint <= 767) { // Tablet
+        return Math.max(250, Math.floor(originalValue * 0.9));
+      }
+    }
+    
+    // Ajustar intervalo de autoplay para pantallas más pequeñas
+    if (key === 'interval' && typeof originalValue === 'number') {
+      if (targetBreakpoint <= 480) { // Mobile
+        return Math.max(3000, Math.floor(originalValue * 0.8)); // Intervalo más corto en móvil
+      } else if (targetBreakpoint <= 767) { // Tablet
+        return Math.max(4000, Math.floor(originalValue * 0.9));
+      }
+    }
+    
+    // Ajustar flickPower para pantallas táctiles
+    if (key === 'flickPower' && typeof originalValue === 'number') {
+      if (targetBreakpoint <= 767) { // Mobile y Tablet (pantallas táctiles)
+        return Math.max(300, Math.floor(originalValue * 0.7)); // Menos sensible en táctil
+      }
+    }
+    
+    return originalValue;
+  };
+
+  // Función para propagar cambios a breakpoints inferiores
+  const cascadeToSmallerBreakpoints = (updatedConfig: SplideConfig, changedKey: keyof SplideConfig, newValue: any, currentBreakpoint: number | null): SplideConfig => {
+    const newBreakpoints = updatedConfig.breakpoints ? { ...updatedConfig.breakpoints } : {};
+    
+    if (!currentBreakpoint) {
+      // Si estamos en desktop (sin breakpoint), propagar a todos los breakpoints
+      const breakpointWidths = [1280, 767, 480]; // Laptop, Tablet, Mobile
+      
+      breakpointWidths.forEach(width => {
+        // Solo propagar si el breakpoint no tiene ya un valor personalizado para esta propiedad
+        if (!newBreakpoints[width] || (newBreakpoints[width] as any)[changedKey] === undefined) {
+          const smartValue = getSmartValue(changedKey, newValue, width);
+          newBreakpoints[width] = {
+            ...newBreakpoints[width],
+            [changedKey]: smartValue
+          } as Partial<SplideConfig>;
+        }
+      });
+    } else {
+      // Si estamos en un breakpoint específico, propagar solo a los menores
+      const breakpointWidths = [1280, 767, 480];
+      const currentIndex = breakpointWidths.indexOf(currentBreakpoint);
+      
+      if (currentIndex !== -1) {
+        const smallerBreakpoints = breakpointWidths.slice(currentIndex + 1);
+        
+        smallerBreakpoints.forEach(width => {
+          // Solo propagar si el breakpoint no tiene ya un valor personalizado para esta propiedad
+          if (!newBreakpoints[width] || (newBreakpoints[width] as any)[changedKey] === undefined) {
+            const smartValue = getSmartValue(changedKey, newValue, width);
+            newBreakpoints[width] = {
+              ...newBreakpoints[width],
+              [changedKey]: smartValue
+            } as Partial<SplideConfig>;
+          }
+        });
+      }
+    }
+    
+    return { ...updatedConfig, breakpoints: newBreakpoints };
+  };
+
+  const handleChange = (key: keyof SplideConfig, value: string | number | boolean): void => {
     if (key === 'perPage' || key === 'perMove') {
       value = Math.max(1, Number(value));
     }
@@ -47,24 +174,50 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
           perMove: 1
         };
         
-        onChange({
+        let updatedConfig = {
           ...config,
           breakpoints: {
             ...config.breakpoints,
             [activeBreakpoint]: breakpointConfig
           }
-        });
+        };
+        
+        // Propagar perPage y perMove a breakpoints menores
+        updatedConfig = {
+          ...cascadeToSmallerBreakpoints(updatedConfig, 'perPage', 1, activeBreakpoint),
+          breakpoints: cascadeToSmallerBreakpoints(updatedConfig, 'perPage', 1, activeBreakpoint).breakpoints || {}
+        };
+        updatedConfig = {
+          ...cascadeToSmallerBreakpoints(updatedConfig, 'perMove', 1, activeBreakpoint),
+          breakpoints: cascadeToSmallerBreakpoints(updatedConfig, 'perMove', 1, activeBreakpoint).breakpoints || {}
+        };
+        
+        onChange(updatedConfig);
       } else {
-        onChange({ 
+        let updatedConfig: SplideConfig = { 
           ...config, 
-          [key]: value,
+          [key]: value as 'loop' | 'slide' | 'fade',
           perPage: 1,
           perMove: 1
-        });
+        };
+        
+        // Propagar a todos los breakpoints
+        updatedConfig = {
+          ...cascadeToSmallerBreakpoints(updatedConfig, 'perPage', 1, null),
+          breakpoints: cascadeToSmallerBreakpoints(updatedConfig, 'perPage', 1, null).breakpoints || {}
+        };
+        updatedConfig = {
+          ...cascadeToSmallerBreakpoints(updatedConfig, 'perMove', 1, null),
+          breakpoints: cascadeToSmallerBreakpoints(updatedConfig, 'perMove', 1, null).breakpoints || {}
+        };
+        
+        onChange(updatedConfig);
       }
       return;
     }
 
+    let updatedConfig: SplideConfig;
+    
     if (activeBreakpoint) {
       const breakpointConfig = {
         ...config.breakpoints?.[activeBreakpoint],
@@ -75,44 +228,60 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
         Object.entries(breakpointConfig).filter(([, v]) => v != null)
       );
       
-      onChange({
+      updatedConfig = {
         ...config,
         breakpoints: {
           ...config.breakpoints,
           [activeBreakpoint]: cleanedConfig
         }
-      });
+      };
     } else {
-      onChange({ ...config, [key]: value });
+      updatedConfig = { ...config, [key]: value };
     }
+    
+    // Propagar cambios a breakpoints menores para ciertas propiedades
+    const cascadeProperties: (keyof SplideConfig)[] = [
+      'perPage', 'perMove', 'gap', 'width', 'height',
+      'paddingLeft', 'paddingRight', 'paddingTop', 'paddingBottom',
+      'speed', 'rewindSpeed', 'interval', 'flickPower'
+    ];
+    if (cascadeProperties.includes(key)) {
+      const cascadedConfig = cascadeToSmallerBreakpoints(updatedConfig, key, value, activeBreakpoint);
+      updatedConfig = {
+        ...cascadedConfig,
+        breakpoints: cascadedConfig.breakpoints || {}
+      };
+    }
+    
+    onChange(updatedConfig);
   };
 
-  const handleDimensionChange = (key: keyof SplideConfig, value: string, unit: string) => {
+  const handleDimensionChange = (key: keyof SplideConfig, value: string, unit: string): void => {
     const numValue = value === '' ? 0 : parseFloat(value);
     handleChange(key, `${numValue}${unit}`);
   };
 
-  const getCurrentValue = (key: keyof SplideConfig, defaultValue: any = '') => {
+  const getCurrentValue = (key: keyof SplideConfig, defaultValue: any = ''): any => {
     if (activeBreakpoint) {
       return config.breakpoints?.[activeBreakpoint]?.[key] ?? config[key] ?? defaultValue;
     }
     return config[key] ?? defaultValue;
   };
 
-  const parseDimensionValue = (dimension: string = '0px') => {
+  const parseDimensionValue = (dimension: string = '0px'): { value: string; unit: string } => {
     const match = dimension.match(/^([\d.]+)(.+)$/);
     return match ? { value: match[1], unit: match[2] } : { value: '0', unit: 'px' };
   };
 
-  const getDisplayValue = (field: any, value: any) => {
-    if (field.optionValues) {
+  const getDisplayValue = (field: ConfigField, value: any): string => {
+    if (field.optionValues && field.options) {
       const index = field.optionValues.indexOf(value);
-      return index !== -1 ? field.options[index] : value;
+      return index !== -1 ? field.options[index] : String(value);
     }
-    return value;
+    return String(value);
   };
 
-  const shouldShowField = (field: any) => {
+  const shouldShowField = (field: ConfigField): boolean => {
     const paddingType = getCurrentValue('paddingType', 'horizontal');
     const currentType = getCurrentValue('type', 'slide');
     const rewindEnabled = getCurrentValue('rewind', false);
@@ -151,8 +320,10 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
   const handleReset = () => {
     const initialConfig = configSections.reduce((acc, section) => {
       section.fields.forEach((field) => {
-        if (field.defaultValue !== undefined) {
-          acc[field.key] = field.defaultValue;
+        if (field.defaultValue !== undefined && field.defaultValue !== null) {
+          if (field.key in acc) {
+            (acc as any)[field.key] = field.defaultValue;
+          }
         }
       });
       return acc;
@@ -238,11 +409,13 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
                         <Select
                           value={getDisplayValue(field, getCurrentValue(field.key, field.defaultValue))}
                           onValueChange={(value) => {
-                            if (field.optionValues) {
+                            if (field.optionValues && field.options) {
                               const index = field.options.indexOf(value);
-                              const optionValue = field.optionValues[index];
-                              if (optionValue !== null && optionValue !== undefined) {
-                                handleChange(field.key, optionValue);
+                              if (index !== -1 && index < field.optionValues.length) {
+                                const optionValue = field.optionValues[index];
+                                if (optionValue !== null) {
+                                  handleChange(field.key, optionValue);
+                                }
                               }
                             } else {
                               handleChange(field.key, value);
@@ -257,7 +430,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
                               <SelectItem key={option} value={option}>
                                 {t(option)}
                               </SelectItem>
-                            ))}
+                            )) ?? []}
                           </SelectContent>
                         </Select>
                       ) : field.type === 'dimension' ? (
@@ -290,7 +463,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
                                 <SelectItem key={unit} value={unit}>
                                   {unit}
                                 </SelectItem>
-                              ))}
+                              )) ?? []}
                             </SelectContent>
                           </Select>
                         </div>
