@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Copy, Check, Edit, Save, X } from "lucide-react";
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
-import json from "react-syntax-highlighter/dist/esm/languages/hljs/json";
 import { vs2015 } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { SplideConfig } from "../types/config";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -15,7 +14,7 @@ import {
 import { cn } from "../lib/utils";
 import { toast } from "sonner";
 
-SyntaxHighlighter.registerLanguage("json", json);
+// react-syntax-highlighter v16 auto-registers languages, no manual registration needed
 
 interface CodeOutputProps {
   config: SplideConfig;

@@ -13,4 +13,15 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    fs: {
+      strict: true,
+      deny: ['.env', '.env.*', '*.{crt,pem}', '**/.git/**'],
+    },
+    headers: {
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block',
+    },
+  },
 });
