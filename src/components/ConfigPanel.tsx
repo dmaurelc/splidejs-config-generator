@@ -240,20 +240,21 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
       updatedConfig = { ...config, [key]: value };
     }
     
-    // Propagar cambios a breakpoints menores para ciertas propiedades
-    // SOLO cuando estamos editando un breakpoint específico, NO el base/Desktop
+    // NOTA: Cascada desactivada - cada breakpoint es completamente independiente
+    // Los cambios solo se aplican al breakpoint o config base que se está editando
     const cascadeProperties: (keyof SplideConfig)[] = [
       'perPage', 'perMove', 'gap', 'width', 'height',
       'paddingLeft', 'paddingRight', 'paddingTop', 'paddingBottom',
       'speed', 'rewindSpeed', 'interval', 'flickPower'
     ];
-    if (cascadeProperties.includes(key) && activeBreakpoint !== null) {
-      const cascadedConfig = cascadeToSmallerBreakpoints(updatedConfig, key, value, activeBreakpoint);
-      updatedConfig = {
-        ...cascadedConfig,
-        breakpoints: cascadedConfig.breakpoints || {}
-      };
-    }
+    // Cascada desactivada - cada breakpoint es independiente
+    // if (cascadeProperties.includes(key) && activeBreakpoint !== null) {
+    //   const cascadedConfig = cascadeToSmallerBreakpoints(updatedConfig, key, value, activeBreakpoint);
+    //   updatedConfig = {
+    //     ...cascadedConfig,
+    //     breakpoints: cascadedConfig.breakpoints || {}
+    //   };
+    // }
     
     onChange(updatedConfig);
   };
