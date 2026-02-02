@@ -265,10 +265,28 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
   };
 
   const getCurrentValue = (key: keyof SplideConfig, defaultValue: any = ''): any => {
-    if (activeBreakpoint) {
-      return config.breakpoints?.[activeBreakpoint]?.[key] ?? config[key] ?? defaultValue;
-    }
-    return config[key] ?? defaultValue;
+    // Herencia con orden: Desktop → Laptop (1280) → Tablet (767) → Mobile (480)
+    const getInheritedValue = (): any => {
+      if (activeBreakpoint === null) {
+        // Desktop - sin herencia
+        return config[key];
+      }
+      if (activeBreakpoint === 1280) {
+        // Laptop - hereda de Desktop
+        return config.breakpoints?.[1280]?.[key] ?? config[key];
+      }
+      if (activeBreakpoint === 767) {
+        // Tablet - hereda de Laptop, luego Desktop
+        return config.breakpoints?.[767]?.[key] ?? config.breakpoints?.[1280]?.[key] ?? config[key];
+      }
+      if (activeBreakpoint === 480) {
+        // Mobile - hereda de Tablet, luego Laptop, luego Desktop
+        return config.breakpoints?.[480]?.[key] ?? config.breakpoints?.[767]?.[key] ?? config.breakpoints?.[1280]?.[key] ?? config[key];
+      }
+      return defaultValue;
+    };
+
+    return getInheritedValue() ?? defaultValue;
   };
 
   const parseDimensionValue = (dimension: string = '0px'): { value: string; unit: string } => {
