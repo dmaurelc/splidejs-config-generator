@@ -3,6 +3,7 @@ import { Info, RotateCcw } from 'lucide-react';
 import { configSections } from '../data/configSections';
 import { SplideConfig, ConfigField } from '../types/config';
 import { useLanguage } from '../contexts/LanguageContext';
+import { initialConfig } from '../config/initialConfig';
 import { 
   Accordion, 
   AccordionContent, 
@@ -240,12 +241,13 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
     }
     
     // Propagar cambios a breakpoints menores para ciertas propiedades
+    // SOLO cuando estamos editando un breakpoint específico, NO el base/Desktop
     const cascadeProperties: (keyof SplideConfig)[] = [
       'perPage', 'perMove', 'gap', 'width', 'height',
       'paddingLeft', 'paddingRight', 'paddingTop', 'paddingBottom',
       'speed', 'rewindSpeed', 'interval', 'flickPower'
     ];
-    if (cascadeProperties.includes(key)) {
+    if (cascadeProperties.includes(key) && activeBreakpoint !== null) {
       const cascadedConfig = cascadeToSmallerBreakpoints(updatedConfig, key, value, activeBreakpoint);
       updatedConfig = {
         ...cascadedConfig,
@@ -318,17 +320,6 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
   };
 
   const handleReset = () => {
-    const initialConfig = configSections.reduce((acc, section) => {
-      section.fields.forEach((field) => {
-        if (field.defaultValue !== undefined && field.defaultValue !== null) {
-          if (field.key in acc) {
-            (acc as any)[field.key] = field.defaultValue;
-          }
-        }
-      });
-      return acc;
-    }, {} as SplideConfig);
-
     if (activeBreakpoint) {
       // Reset only the active breakpoint
       onChange({
@@ -340,8 +331,11 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
       });
       toast.success(t('config.breakpoint_reset', { breakpoint: activeBreakpoint }));
     } else {
-      // Reset all configuration
-      onChange({ ...initialConfig });
+      // Reset Desktop configuration - mantener breakpoints existentes
+      onChange({
+        ...initialConfig,
+        breakpoints: config.breakpoints,
+      });
       toast.success(t('config.all_reset'));
     }
   };

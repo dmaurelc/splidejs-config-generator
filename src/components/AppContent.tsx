@@ -9,18 +9,7 @@ import { MobileSidebar } from "./MobileSidebar";
 import { SplideConfig } from "../types/config";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useIsMobile } from "../hooks/useIsMobile";
-
-const initialConfig: SplideConfig = {
-  type: "loop",
-  height: "400px",
-  perPage: 3,
-  perMove: 1,
-  gap: "1rem",
-  arrows: true,
-  pagination: true,
-  drag: true,
-  rewind: false,
-};
+import { initialConfig } from "../config/initialConfig";
 
 export const AppContent: React.FC = () => {
   const [config, setConfig] = useState<SplideConfig>(initialConfig);
