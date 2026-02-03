@@ -2,6 +2,11 @@
 
 A powerful and intuitive visual configuration generator for SplideJS carousels. This tool helps developers quickly create and customize SplideJS configurations with real-time preview.
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![React](https://img.shields.io/badge/React-18.2-blue)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.1-38bdf8)](https://tailwindcss.com/)
+
 ![SplideJS Configuration Generator](public/image-og.png)
 
 ## Features
@@ -12,7 +17,9 @@ A powerful and intuitive visual configuration generator for SplideJS carousels. 
 - 🌐 **Multi-language Support**: Available in Spanish and English with easy language switching
 - 📱 **Responsive Testing**: Test your configuration across different breakpoints (Desktop, Laptop, Tablet, Mobile)
 - 📋 **JSON Export**: Copy configuration as JSON with editable mode
-- 🎨 **Beautiful UI**: Clean and modern interface built with React and Tailwind CSS
+- 🎨 **Beautiful UI**: Clean and modern interface with DM Sans typography and refined lime/green theme
+- 🌙 **Dark Mode**: Toggle between light and dark themes with system preference detection
+- 🎨 **Section Icons**: Visual icons for all 8 configuration sections for better navigation
 - 🔧 **Advanced Options**: Full access to 50+ SplideJS configuration options organized in 8 sections
 - ⚡ **Performance Optimized**: Fast loading and smooth interactions
 - 🎛️ **Sidebar Navigation**: Organized configuration panels with collapsible accordion sections
@@ -81,14 +88,15 @@ A powerful and intuitive visual configuration generator for SplideJS carousels. 
 
 ## Tech Stack
 
-- **React 18** - Modern React with hooks and concurrent features
-- **TypeScript** - Type-safe development
-- **Tailwind CSS** - Utility-first CSS framework with custom configurations
-- **Vite** - Fast build tool and dev server with HMR
+- **React 18.2** - Modern React with hooks and concurrent features
+- **TypeScript 5.9** - Type-safe development
+- **Tailwind CSS 4.1** - CSS-first framework with inline configuration
+- **Vite 7.2** - Fast build tool and dev server with HMR
 - **SplideJS** - Lightweight, accessible carousel library
-- **Radix UI** - Accessible component primitives (Dialog, Tooltip, Accordion, etc.)
-- **Lucide Icons** - Beautiful, customizable icon library
-- **Sonner** - Toast notifications
+- **Radix UI** - Accessible component primitives (Dialog, Tooltip, Accordion, Select, Switch, etc.)
+- **Lucide Icons 0.563** - Beautiful, customizable icon library
+- **Sonner 2.0** - Toast notifications
+- **DM Sans** - Modern, accessible typeface for excellent readability
 
 ## Development
 
@@ -128,14 +136,17 @@ src/
 │   ├── ui/             # Reusable UI components (Radix UI)
 │   ├── ConfigPanel.tsx # Main configuration panel with accordion
 │   ├── Preview.tsx     # Carousel preview with breakpoints
-│   └── CodeOutput.tsx  # JSON code export with editable mode
+│   ├── CodeOutput.tsx  # JSON code export with editable mode
+│   ├── ThemeToggle.tsx # Dark mode toggle component
+│   ├── SectionIcon.tsx # Icon component for sections
+│   └── ...
 ├── config/             # Initial configuration
-├── contexts/           # React contexts (Language)
+├── contexts/           # React contexts (Language, Theme)
 ├── data/               # Configuration sections data
 ├── hooks/              # Custom React hooks
 ├── lib/                # Utility functions
 ├── types/              # TypeScript type definitions
-└── styles/             # Global styles and Tailwind config
+└── index.css           # Global styles with Tailwind v4 inline theme
 ```
 
 ## Mobile & Accessibility Features
@@ -157,6 +168,10 @@ src/
 ## Documentation
 
 For detailed information about configuration sections and options, see [docs/SECCIONES.md](docs/SECCIONES.md) (Spanish).
+
+### Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a detailed history of changes.
 
 ## Contributing
 

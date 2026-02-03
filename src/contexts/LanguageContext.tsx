@@ -50,6 +50,10 @@ const translations = {
     // Header
     "app.title": "SplideJS",
     "language.selector": "Idioma",
+    "theme.toggle": "Cambiar tema",
+    "theme.light": "Claro",
+    "theme.dark": "Oscuro",
+    "theme.system": "Sistema",
 
     // Footer
     "footer.madeWith": "Hecho con 🤘 por",
@@ -288,6 +292,10 @@ const translations = {
     // Header
     "app.title": "SplideJS",
     "language.selector": "Language",
+    "theme.toggle": "Toggle theme",
+    "theme.light": "Light",
+    "theme.dark": "Dark",
+    "theme.system": "System",
 
     // Footer
     "footer.madeWith": "Made with 🤘 by",

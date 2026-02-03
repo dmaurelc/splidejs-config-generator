@@ -4,11 +4,11 @@ import { configSections } from '../data/configSections';
 import { SplideConfig, ConfigField } from '../types/config';
 import { useLanguage } from '../contexts/LanguageContext';
 import { initialConfig } from '../config/initialConfig';
-import { 
-  Accordion, 
-  AccordionContent, 
-  AccordionItem, 
-  AccordionTrigger 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
 } from './ui/accordion';
 import { Label } from './ui/label';
 import { Input } from './ui/input';
@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Switch } from './ui/switch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { Button } from './ui/button';
+import { SectionIcon } from './SectionIcon';
 import { cn } from '../lib/utils';
 import { toast } from 'sonner';
 
@@ -390,7 +391,10 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
           {configSections.map((section) => (
             <AccordionItem key={section.title} value={section.title}>
               <AccordionTrigger className="px-4">
-                <span className="text-sm font-medium">{t(section.title)}</span>
+                <div className="flex items-center gap-3">
+                  {section.icon && <SectionIcon iconName={section.icon} />}
+                  <span className="text-sm font-medium">{t(section.title)}</span>
+                </div>
               </AccordionTrigger>
               <AccordionContent>
                 <div className="px-4 py-2 space-y-4">

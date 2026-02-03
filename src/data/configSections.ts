@@ -4,6 +4,7 @@ export const configSections: ConfigSection[] = [
   // 1. Slider & Dimensions (8 opciones)
   {
     title: "section.sliderDimensions",
+    icon: "Sliders",
     fields: [
       {
         key: "type",
@@ -72,6 +73,7 @@ export const configSections: ConfigSection[] = [
   // 2. Slide Layout (10 opciones)
   {
     title: "section.slideLayout",
+    icon: "LayoutGrid",
     fields: [
       {
         key: "perPage",
@@ -155,6 +157,7 @@ export const configSections: ConfigSection[] = [
   // 3. Navigation (3 opciones)
   {
     title: "section.navigation",
+    icon: "Compass",
     fields: [
       {
         key: "arrows",
@@ -184,6 +187,7 @@ export const configSections: ConfigSection[] = [
   // 4. Drag & Touch (8 opciones)
   {
     title: "section.dragTouch",
+    icon: "Hand",
     fields: [
       {
         key: "drag",
@@ -252,6 +256,7 @@ export const configSections: ConfigSection[] = [
   // 5. Autoplay (5 opciones)
   {
     title: "section.autoplay",
+    icon: "PlayCircle",
     fields: [
       {
         key: "autoplay",
@@ -294,6 +299,7 @@ export const configSections: ConfigSection[] = [
   // 6. Transitions (6 opciones)
   {
     title: "section.transitions",
+    icon: "Zap",
     fields: [
       {
         key: "speed",
@@ -362,6 +368,7 @@ export const configSections: ConfigSection[] = [
   // 7. Accessibility (2 opciones)
   {
     title: "section.accessibility",
+    icon: "Eye",
     fields: [
       {
         key: "accessibility",
@@ -382,6 +389,7 @@ export const configSections: ConfigSection[] = [
   // 8. Advanced (8 opciones)
   {
     title: "section.advanced",
+    icon: "Settings",
     fields: [
       {
         key: "lazyLoad",

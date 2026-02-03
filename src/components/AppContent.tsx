@@ -3,6 +3,7 @@ import { ConfigPanel } from "./ConfigPanel";
 import { Preview } from "./Preview";
 import { CodeOutput } from "./CodeOutput";
 import { LanguageSelector } from "./LanguageSelector";
+import { ThemeToggle } from "./ThemeToggle";
 import { MobileToggle } from "./MobileToggle";
 import { MobileTabs, MobileTabType } from "./MobileTabs";
 import { MobileSidebar } from "./MobileSidebar";
@@ -50,7 +51,10 @@ export const AppContent: React.FC = () => {
               />
               <h1 className="text-lg font-semibold">{t("app.title")}</h1>
             </div>
-            <LanguageSelector />
+            <div className="flex items-center gap-2">
+              <LanguageSelector />
+              <ThemeToggle />
+            </div>
           </header>
 
           {/* Mobile Tabs */}
@@ -108,7 +112,10 @@ export const AppContent: React.FC = () => {
           }`}
         >
           <h1 className="text-xl font-semibold">{t("app.title")}</h1>
-          <LanguageSelector />
+          <div className="flex items-center gap-4">
+            <LanguageSelector />
+            <ThemeToggle />
+          </div>
         </header>
 
         <div className="flex-1 flex overflow-hidden h-full">

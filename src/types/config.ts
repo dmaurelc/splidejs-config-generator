@@ -103,5 +103,6 @@ export interface ConfigField {
 
 export interface ConfigSection {
   title: string;
+  icon?: string;
   fields: ConfigField[];
 }

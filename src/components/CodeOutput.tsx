@@ -365,7 +365,7 @@ export const CodeOutput: React.FC<CodeOutputProps> = ({
             <textarea
               value={editableCode}
               onChange={handleCodeChange}
-              className="w-full h-full font-mono text-sm p-4 bg-zinc-900 text-white border-none outline-none resize-none"
+              className="w-full h-full font-mono text-sm p-4 bg-zinc-900 text-white border-none outline-hidden resize-none"
               style={{
                 lineHeight: "1.5",
                 tabSize: 2,
