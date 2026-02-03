@@ -83,14 +83,14 @@ export const AppContent: React.FC = () => {
 
           {/* Mobile Footer */}
           <footer className="bg-card border-t px-4 py-2 text-center text-xs text-muted-foreground">
-            Made with 🤘 by{" "}
+            {t("footer.madeWith")}{" "}
             <a
-              href="https://github.com/dmaurelc"
+              href="https://github.com/dmaurelc/splidejs-config-generator"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary hover:underline"
             >
-              Daniel MC.
+              {t("footer.author")}
             </a>
           </footer>
         </div>
@@ -144,14 +144,14 @@ export const AppContent: React.FC = () => {
           isFullscreen ? "hidden" : ""
         }`}
       >
-        Made with 🤘 by{" "}
+        {t("footer.madeWith")}{" "}
         <a
-          href="https://github.com/dmaurelc"
+          href="https://github.com/dmaurelc/splidejs-config-generator"
           target="_blank"
           rel="noopener noreferrer"
           className="text-primary hover:underline"
         >
-          Daniel MC.
+          {t("footer.author")}
         </a>
       </footer>
     </div>

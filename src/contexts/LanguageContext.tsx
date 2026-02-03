@@ -51,17 +51,18 @@ const translations = {
     "app.title": "SplideJS",
     "language.selector": "Idioma",
 
+    // Footer
+    "footer.madeWith": "Hecho con 🤘 por",
+    "footer.author": "Daniel MC",
+
     // Config Sections
-    "section.basic": "Opciones Básicas",
-    "section.dimensions": "Dimensiones",
-    "section.layout": "Diseño y Posición",
-    "section.padding": "Espaciado (Padding)",
-    "section.timing": "Temporización",
-    "section.controls": "Controles",
-    "section.transitions": "Transiciones y Animaciones",
-    "section.performance": "Performance y Lazy Loading",
-    "section.clones": "Clones (Modo Loop)",
-    "section.keyboard": "Navegación por Teclado",
+    "section.sliderDimensions": "Slider y Dimensiones",
+    "section.slideLayout": "Disposición de Slides",
+    "section.navigation": "Navegación",
+    "section.dragTouch": "Arrastre y Táctil",
+    "section.autoplay": "Reproducción Automática",
+    "section.transitions": "Transiciones",
+    "section.accessibility": "Accesibilidad",
     "section.advanced": "Opciones Avanzadas",
 
     // Preview
@@ -97,6 +98,16 @@ const translations = {
     "field.width.desc": "Ancho del slider",
     "field.height": "Alto",
     "field.height.desc": "Alto del slider",
+    "field.fixedWidth": "Ancho Fijo",
+    "field.fixedWidth.desc": "Ancho fijo de los slides",
+    "field.fixedHeight": "Alto Fijo",
+    "field.fixedHeight.desc": "Alto fijo de los slides",
+    "field.heightRatio": "Ratio de Alto",
+    "field.heightRatio.desc": "Altura como ratio del ancho (0.3 = 30% del ancho)",
+    "field.autoWidth": "Ancho Automático",
+    "field.autoWidth.desc": "El ancho del slide se determina por el elemento",
+    "field.autoHeight": "Alto Automático",
+    "field.autoHeight.desc": "El alto del slide se determina por el elemento",
 
     // Layout
     "field.direction": "Dirección",
@@ -129,6 +140,8 @@ const translations = {
     "field.pauseOnHover.desc": "Pausar autoplay al pasar el mouse",
     "field.pauseOnFocus": "Pausar al Enfocar",
     "field.pauseOnFocus.desc": "Pausar autoplay al enfocar el slider",
+    "field.resetProgress": "Resetear Progreso",
+    "field.resetProgress.desc": "Resetear el temporizador de autoplay al reanudar",
 
     // Controls
     "field.arrows": "Flechas",
@@ -159,6 +172,12 @@ const translations = {
     "field.flickMaxPages": "Máx. Páginas por Flick",
     "field.flickMaxPages.desc":
       "Límite de páginas que puede avanzar con un flick",
+    "field.dragAngleThreshold": "Umbral de Ángulo de Arrastre",
+    "field.dragAngleThreshold.desc": "Ángulo mínimo para iniciar el arrastre (grados)",
+    "field.swipeDistanceThreshold": "Umbral de Distancia de Swipe",
+    "field.swipeDistanceThreshold.desc": "Distancia mínima para considerar como swipe (px)",
+    "field.flickVelocityThreshold": "Umbral de Velocidad de Flick",
+    "field.flickVelocityThreshold.desc": "Velocidad mínima para considerar como flick",
 
     // Performance
     "field.lazyLoad": "Carga Diferida",
@@ -182,16 +201,28 @@ const translations = {
     "field.keyboard": "Control por Teclado",
     "field.keyboard.desc":
       "Configurar comportamiento de navegación por teclado",
+    "field.arrowPath": "Path de Flecha",
+    "field.arrowPath.desc": "Path SVG personalizado para las flechas de navegación",
 
     // Advanced
     "field.isNavigation": "Es Navegación",
     "field.isNavigation.desc": "Si este slider controla otro slider",
     "field.trimSpace": "Recortar Espacio",
-    "field.trimSpace.desc": "Recortar espacio vacío al final",
+    "field.trimSpace.desc": "Recortar espacio vacío al final. 'move' siempre mueve el slider",
     "field.updateOnMove": "Actualizar al Mover",
     "field.updateOnMove.desc": "Actualizar el slider al mover",
     "field.destroy": "Destruir",
     "field.destroy.desc": "Destruir el slider",
+    "field.cover": "Cover",
+    "field.cover.desc": "Convertir img src a background-image del padre",
+    "field.throttle": "Throttle",
+    "field.throttle.desc": "Throttle para el evento de resize (ms)",
+    "field.accessibility": "Accesibilidad",
+    "field.accessibility.desc": "Habilitar atributos ARIA y textos para screen reader",
+    "field.slideFocus": "Focus en Slides",
+    "field.slideFocus.desc": "Agregar tabindex=\"0\" a los slides visibles",
+    "field.i18n": "Internacionalización",
+    "field.i18n.desc": "Objeto JSON con textos para i18n (opcional)",
 
     // Options
     "option.slide": "Deslizar",
@@ -218,6 +249,9 @@ const translations = {
     "option.easeOut": "Suave Salida",
     "option.easeInOut": "Suave Entrada/Salida",
     "option.customCubic": "Cubic Bezier Personalizado",
+    "option.trimTrue": "Activado",
+    "option.trimFalse": "Desactivado",
+    "option.trimMove": "Mover Siempre",
 
     // Code Output
     "code.title": "Código",
@@ -255,18 +289,19 @@ const translations = {
     "app.title": "SplideJS",
     "language.selector": "Language",
 
+    // Footer
+    "footer.madeWith": "Made with 🤘 by",
+    "footer.author": "Daniel MC",
+
     // Config Sections
-    "section.basic": "Basic Options",
-    "section.dimensions": "Dimensions",
-    "section.layout": "Layout & Position",
-    "section.padding": "Padding",
-    "section.timing": "Timing",
-    "section.controls": "Controls",
-    "section.transitions": "Transitions & Animations",
-    "section.performance": "Performance & Lazy Loading",
-    "section.clones": "Clones (Loop Mode)",
-    "section.keyboard": "Keyboard Navigation",
-    "section.advanced": "Advanced Options",
+    "section.sliderDimensions": "Slider & Dimensions",
+    "section.slideLayout": "Slide Layout",
+    "section.navigation": "Navigation",
+    "section.dragTouch": "Drag & Touch",
+    "section.autoplay": "Autoplay",
+    "section.transitions": "Transitions",
+    "section.accessibility": "Accessibility",
+    "section.advanced": "Advanced",
 
     // Preview
     "preview.title": "Preview",
@@ -301,6 +336,16 @@ const translations = {
     "field.width.desc": "Width of the slider",
     "field.height": "Height",
     "field.height.desc": "Height of the slider",
+    "field.fixedWidth": "Fixed Width",
+    "field.fixedWidth.desc": "Fixed width of slides",
+    "field.fixedHeight": "Fixed Height",
+    "field.fixedHeight.desc": "Fixed height of slides",
+    "field.heightRatio": "Height Ratio",
+    "field.heightRatio.desc": "Height as ratio to slider width (0.3 = 30% of width)",
+    "field.autoWidth": "Auto Width",
+    "field.autoWidth.desc": "Slide width determined by element width itself",
+    "field.autoHeight": "Auto Height",
+    "field.autoHeight.desc": "Slide height determined by element height itself",
 
     // Layout
     "field.direction": "Direction",
@@ -333,6 +378,8 @@ const translations = {
     "field.pauseOnHover.desc": "Pause autoplay on hover",
     "field.pauseOnFocus": "Pause on Focus",
     "field.pauseOnFocus.desc": "Pause autoplay when slider is focused",
+    "field.resetProgress": "Reset Progress",
+    "field.resetProgress.desc": "Reset autoplay timer progress when resumed",
 
     // Controls
     "field.arrows": "Arrows",
@@ -360,6 +407,12 @@ const translations = {
     "field.flickPower.desc": 'Controls how far the slider moves with a "flick"',
     "field.flickMaxPages": "Max Flick Pages",
     "field.flickMaxPages.desc": "Limit of pages that can advance with a flick",
+    "field.dragAngleThreshold": "Drag Angle Threshold",
+    "field.dragAngleThreshold.desc": "Angle threshold for drag (degrees)",
+    "field.swipeDistanceThreshold": "Swipe Distance Threshold",
+    "field.swipeDistanceThreshold.desc": "Distance threshold for swipe vs flick (px)",
+    "field.flickVelocityThreshold": "Flick Velocity Threshold",
+    "field.flickVelocityThreshold.desc": "Velocity threshold for flick vs swipe",
 
     // Performance
     "field.lazyLoad": "Lazy Load",
@@ -381,16 +434,28 @@ const translations = {
     // Keyboard
     "field.keyboard": "Keyboard Control",
     "field.keyboard.desc": "Configure keyboard navigation behavior",
+    "field.arrowPath": "Arrow Path",
+    "field.arrowPath.desc": "Custom SVG path for navigation arrows",
 
     // Advanced
     "field.isNavigation": "Is Navigation",
     "field.isNavigation.desc": "Whether this slider controls another slider",
     "field.trimSpace": "Trim Space",
-    "field.trimSpace.desc": "Trim empty space at the end",
+    "field.trimSpace.desc": "Trim empty space at ends. 'move' always moves the slider",
     "field.updateOnMove": "Update on Move",
     "field.updateOnMove.desc": "Update the slider when moving",
     "field.destroy": "Destroy",
     "field.destroy.desc": "Destroy the slider",
+    "field.cover": "Cover",
+    "field.cover.desc": "Convert img src to background-image of parent element",
+    "field.throttle": "Throttle",
+    "field.throttle.desc": "Throttle duration for resize event (ms)",
+    "field.accessibility": "Accessibility",
+    "field.accessibility.desc": "Enable ARIA attributes and screen reader texts",
+    "field.slideFocus": "Slide Focus",
+    "field.slideFocus.desc": "Add tabindex=\"0\" to visible slides",
+    "field.i18n": "Internationalization",
+    "field.i18n.desc": "JSON object with i18n texts (optional)",
 
     // Options
     "option.slide": "Slide",
@@ -417,6 +482,9 @@ const translations = {
     "option.easeOut": "Ease Out",
     "option.easeInOut": "Ease In Out",
     "option.customCubic": "Custom Cubic Bezier",
+    "option.trimTrue": "Enabled",
+    "option.trimFalse": "Disabled",
+    "option.trimMove": "Always Move",
 
     // Code Output
     "code.title": "Code",

@@ -1,8 +1,9 @@
 import { ConfigSection } from "../types/config";
 
 export const configSections: ConfigSection[] = [
+  // 1. Slider & Dimensions (8 opciones)
   {
-    title: "section.basic",
+    title: "section.sliderDimensions",
     fields: [
       {
         key: "type",
@@ -28,6 +29,50 @@ export const configSections: ConfigSection[] = [
         defaultValue: "400px",
         units: ["px", "rem", "em", "%", "vh"],
       },
+      {
+        key: "heightRatio",
+        label: "field.heightRatio",
+        type: "number",
+        description: "field.heightRatio.desc",
+        defaultValue: 0,
+        step: 0.01,
+      },
+      {
+        key: "autoWidth",
+        label: "field.autoWidth",
+        type: "boolean",
+        description: "field.autoWidth.desc",
+        defaultValue: false,
+      },
+      {
+        key: "autoHeight",
+        label: "field.autoHeight",
+        type: "boolean",
+        description: "field.autoHeight.desc",
+        defaultValue: false,
+      },
+      {
+        key: "direction",
+        label: "field.direction",
+        type: "select",
+        options: ["option.ltr", "option.rtl", "option.ttb"],
+        optionValues: ["ltr", "rtl", "ttb"],
+        description: "field.direction.desc",
+        defaultValue: "ltr",
+      },
+      {
+        key: "start",
+        label: "field.start",
+        type: "number",
+        description: "field.start.desc",
+        defaultValue: 0,
+      },
+    ],
+  },
+  // 2. Slide Layout (10 opciones)
+  {
+    title: "section.slideLayout",
+    fields: [
       {
         key: "perPage",
         label: "field.perPage",
@@ -59,32 +104,6 @@ export const configSections: ConfigSection[] = [
         description: "field.focus.desc",
         defaultValue: 0,
       },
-    ],
-  },
-  {
-    title: "section.layout",
-    fields: [
-      {
-        key: "direction",
-        label: "field.direction",
-        type: "select",
-        options: ["option.ltr", "option.rtl", "option.ttb"],
-        optionValues: ["ltr", "rtl", "ttb"],
-        description: "field.direction.desc",
-        defaultValue: "ltr",
-      },
-      {
-        key: "start",
-        label: "field.start",
-        type: "number",
-        description: "field.start.desc",
-        defaultValue: 0,
-      },
-    ],
-  },
-  {
-    title: "section.padding",
-    fields: [
       {
         key: "paddingType",
         label: "field.paddingType",
@@ -133,50 +152,9 @@ export const configSections: ConfigSection[] = [
       },
     ],
   },
+  // 3. Navigation (3 opciones)
   {
-    title: "section.timing",
-    fields: [
-      {
-        key: "speed",
-        label: "field.speed",
-        type: "number",
-        description: "field.speed.desc",
-        defaultValue: 400,
-        step: 50,
-      },
-      {
-        key: "interval",
-        label: "field.interval",
-        type: "number",
-        description: "field.interval.desc",
-        defaultValue: 5000,
-        step: 100,
-      },
-      {
-        key: "autoplay",
-        label: "field.autoplay",
-        type: "boolean",
-        description: "field.autoplay.desc",
-        defaultValue: false,
-      },
-      {
-        key: "pauseOnHover",
-        label: "field.pauseOnHover",
-        type: "boolean",
-        description: "field.pauseOnHover.desc",
-        defaultValue: true,
-      },
-      {
-        key: "pauseOnFocus",
-        label: "field.pauseOnFocus",
-        type: "boolean",
-        description: "field.pauseOnFocus.desc",
-        defaultValue: true,
-      },
-    ],
-  },
-  {
-    title: "section.controls",
+    title: "section.navigation",
     fields: [
       {
         key: "arrows",
@@ -193,63 +171,26 @@ export const configSections: ConfigSection[] = [
         defaultValue: true,
       },
       {
+        key: "keyboard",
+        label: "field.keyboard",
+        type: "select",
+        options: ["option.disabled", "option.whenFocused", "option.global"],
+        optionValues: [false, true, "global"],
+        description: "field.keyboard.desc",
+        defaultValue: false,
+      },
+    ],
+  },
+  // 4. Drag & Touch (8 opciones)
+  {
+    title: "section.dragTouch",
+    fields: [
+      {
         key: "drag",
         label: "field.drag",
         type: "boolean",
         description: "field.drag.desc",
         defaultValue: true,
-      },
-      {
-        key: "rewind",
-        label: "field.rewind",
-        type: "boolean",
-        description: "field.rewind.desc",
-        defaultValue: false,
-      },
-      {
-        key: "rewindByDrag",
-        label: "field.rewindByDrag",
-        type: "boolean",
-        description: "field.rewindByDrag.desc",
-        defaultValue: false,
-      },
-      {
-        key: "rewindSpeed",
-        label: "field.rewindSpeed",
-        type: "number",
-        description: "field.rewindSpeed.desc",
-        defaultValue: 400,
-        step: 50,
-      },
-    ],
-  },
-  {
-    title: "section.transitions",
-    fields: [
-      {
-        key: "easing",
-        label: "field.easing",
-        type: "select",
-        options: [
-          "option.default",
-          "option.linear",
-          "option.ease",
-          "option.easeIn",
-          "option.easeOut",
-          "option.easeInOut",
-          "option.customCubic",
-        ],
-        optionValues: [
-          "cubic-bezier(0.25, 1, 0.5, 1)",
-          "linear",
-          "ease",
-          "ease-in",
-          "ease-out",
-          "ease-in-out",
-          "cubic-bezier(0.4, 0, 0.2, 1)",
-        ],
-        description: "field.easing.desc",
-        defaultValue: "cubic-bezier(0.25, 1, 0.5, 1)",
       },
       {
         key: "dragMode",
@@ -282,10 +223,165 @@ export const configSections: ConfigSection[] = [
         description: "field.flickMaxPages.desc",
         defaultValue: 1,
       },
+      {
+        key: "dragAngleThreshold",
+        label: "field.dragAngleThreshold",
+        type: "number",
+        description: "field.dragAngleThreshold.desc",
+        defaultValue: 30,
+        step: 5,
+      },
+      {
+        key: "swipeDistanceThreshold",
+        label: "field.swipeDistanceThreshold",
+        type: "number",
+        description: "field.swipeDistanceThreshold.desc",
+        defaultValue: 150,
+        step: 10,
+      },
+      {
+        key: "flickVelocityThreshold",
+        label: "field.flickVelocityThreshold",
+        type: "number",
+        description: "field.flickVelocityThreshold.desc",
+        defaultValue: 0.6,
+        step: 0.1,
+      },
     ],
   },
+  // 5. Autoplay (5 opciones)
   {
-    title: "section.performance",
+    title: "section.autoplay",
+    fields: [
+      {
+        key: "autoplay",
+        label: "field.autoplay",
+        type: "boolean",
+        description: "field.autoplay.desc",
+        defaultValue: false,
+      },
+      {
+        key: "interval",
+        label: "field.interval",
+        type: "number",
+        description: "field.interval.desc",
+        defaultValue: 5000,
+        step: 100,
+      },
+      {
+        key: "pauseOnHover",
+        label: "field.pauseOnHover",
+        type: "boolean",
+        description: "field.pauseOnHover.desc",
+        defaultValue: true,
+      },
+      {
+        key: "pauseOnFocus",
+        label: "field.pauseOnFocus",
+        type: "boolean",
+        description: "field.pauseOnFocus.desc",
+        defaultValue: true,
+      },
+      {
+        key: "resetProgress",
+        label: "field.resetProgress",
+        type: "boolean",
+        description: "field.resetProgress.desc",
+        defaultValue: true,
+      },
+    ],
+  },
+  // 6. Transitions (6 opciones)
+  {
+    title: "section.transitions",
+    fields: [
+      {
+        key: "speed",
+        label: "field.speed",
+        type: "number",
+        description: "field.speed.desc",
+        defaultValue: 400,
+        step: 50,
+      },
+      {
+        key: "rewindSpeed",
+        label: "field.rewindSpeed",
+        type: "number",
+        description: "field.rewindSpeed.desc",
+        defaultValue: 400,
+        step: 50,
+      },
+      {
+        key: "easing",
+        label: "field.easing",
+        type: "select",
+        options: [
+          "option.default",
+          "option.linear",
+          "option.ease",
+          "option.easeIn",
+          "option.easeOut",
+          "option.easeInOut",
+          "option.customCubic",
+        ],
+        optionValues: [
+          "cubic-bezier(0.25, 1, 0.5, 1)",
+          "linear",
+          "ease",
+          "ease-in",
+          "ease-out",
+          "ease-in-out",
+          "cubic-bezier(0.4, 0, 0.2, 1)",
+        ],
+        description: "field.easing.desc",
+        defaultValue: "cubic-bezier(0.25, 1, 0.5, 1)",
+      },
+      {
+        key: "rewind",
+        label: "field.rewind",
+        type: "boolean",
+        description: "field.rewind.desc",
+        defaultValue: false,
+      },
+      {
+        key: "rewindByDrag",
+        label: "field.rewindByDrag",
+        type: "boolean",
+        description: "field.rewindByDrag.desc",
+        defaultValue: false,
+      },
+      {
+        key: "waitForTransition",
+        label: "field.waitForTransition",
+        type: "boolean",
+        description: "field.waitForTransition.desc",
+        defaultValue: false,
+      },
+    ],
+  },
+  // 7. Accessibility (2 opciones)
+  {
+    title: "section.accessibility",
+    fields: [
+      {
+        key: "accessibility",
+        label: "field.accessibility",
+        type: "boolean",
+        description: "field.accessibility.desc",
+        defaultValue: true,
+      },
+      {
+        key: "slideFocus",
+        label: "field.slideFocus",
+        type: "boolean",
+        description: "field.slideFocus.desc",
+        defaultValue: true,
+      },
+    ],
+  },
+  // 8. Advanced (8 opciones)
+  {
+    title: "section.advanced",
     fields: [
       {
         key: "lazyLoad",
@@ -309,18 +405,6 @@ export const configSections: ConfigSection[] = [
         defaultValue: 1,
       },
       {
-        key: "waitForTransition",
-        label: "field.waitForTransition",
-        type: "boolean",
-        description: "field.waitForTransition.desc",
-        defaultValue: false,
-      },
-    ],
-  },
-  {
-    title: "section.clones",
-    fields: [
-      {
         key: "clones",
         label: "field.clones",
         type: "number",
@@ -334,25 +418,6 @@ export const configSections: ConfigSection[] = [
         description: "field.cloneStatus.desc",
         defaultValue: true,
       },
-    ],
-  },
-  {
-    title: "section.keyboard",
-    fields: [
-      {
-        key: "keyboard",
-        label: "field.keyboard",
-        type: "select",
-        options: ["option.disabled", "option.whenFocused", "option.global"],
-        optionValues: [false, true, "global"],
-        description: "field.keyboard.desc",
-        defaultValue: false,
-      },
-    ],
-  },
-  {
-    title: "section.advanced",
-    fields: [
       {
         key: "isNavigation",
         label: "field.isNavigation",
@@ -363,7 +428,9 @@ export const configSections: ConfigSection[] = [
       {
         key: "trimSpace",
         label: "field.trimSpace",
-        type: "boolean",
+        type: "select",
+        options: ["option.trimTrue", "option.trimFalse", "option.trimMove"],
+        optionValues: [true, false, "move"],
         description: "field.trimSpace.desc",
         defaultValue: true,
       },
@@ -380,6 +447,21 @@ export const configSections: ConfigSection[] = [
         type: "boolean",
         description: "field.destroy.desc",
         defaultValue: false,
+      },
+      {
+        key: "cover",
+        label: "field.cover",
+        type: "boolean",
+        description: "field.cover.desc",
+        defaultValue: false,
+      },
+      {
+        key: "throttle",
+        label: "field.throttle",
+        type: "number",
+        description: "field.throttle.desc",
+        defaultValue: 100,
+        step: 10,
       },
     ],
   },
