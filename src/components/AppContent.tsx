@@ -9,18 +9,7 @@ import { MobileSidebar } from "./MobileSidebar";
 import { SplideConfig } from "../types/config";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useIsMobile } from "../hooks/useIsMobile";
-
-const initialConfig: SplideConfig = {
-  type: "loop",
-  height: "400px",
-  perPage: 3,
-  perMove: 1,
-  gap: "1rem",
-  arrows: true,
-  pagination: true,
-  drag: true,
-  rewind: false,
-};
+import { initialConfig } from "../config/initialConfig";
 
 export const AppContent: React.FC = () => {
   const [config, setConfig] = useState<SplideConfig>(initialConfig);
@@ -94,14 +83,14 @@ export const AppContent: React.FC = () => {
 
           {/* Mobile Footer */}
           <footer className="bg-card border-t px-4 py-2 text-center text-xs text-muted-foreground">
-            Made with 🤘 by{" "}
+            {t("footer.madeWith")}{" "}
             <a
-              href="https://github.com/dmaurelc"
+              href="https://github.com/dmaurelc/splidejs-config-generator"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary hover:underline"
             >
-              Daniel MC.
+              {t("footer.author")}
             </a>
           </footer>
         </div>
@@ -155,14 +144,14 @@ export const AppContent: React.FC = () => {
           isFullscreen ? "hidden" : ""
         }`}
       >
-        Made with 🤘 by{" "}
+        {t("footer.madeWith")}{" "}
         <a
-          href="https://github.com/dmaurelc"
+          href="https://github.com/dmaurelc/splidejs-config-generator"
           target="_blank"
           rel="noopener noreferrer"
           className="text-primary hover:underline"
         >
-          Daniel MC.
+          {t("footer.author")}
         </a>
       </footer>
     </div>

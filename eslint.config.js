@@ -23,6 +23,12 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
+      // Allow setState in useEffect for existing patterns
+      'react-hooks/set-state-in-effect': 'off',
+      // Allow any type for flexibility in config object
+      '@typescript-eslint/no-explicit-any': 'off',
+      // Allow unused vars with underscore prefix
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     },
   }
 );

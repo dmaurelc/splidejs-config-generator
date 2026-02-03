@@ -3,6 +3,7 @@ import { Info, RotateCcw } from 'lucide-react';
 import { configSections } from '../data/configSections';
 import { SplideConfig, ConfigField } from '../types/config';
 import { useLanguage } from '../contexts/LanguageContext';
+import { initialConfig } from '../config/initialConfig';
 import { 
   Accordion, 
   AccordionContent, 
@@ -239,19 +240,21 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
       updatedConfig = { ...config, [key]: value };
     }
     
-    // Propagar cambios a breakpoints menores para ciertas propiedades
+    // NOTA: Cascada desactivada - cada breakpoint es completamente independiente
+    // Los cambios solo se aplican al breakpoint o config base que se está editando
     const cascadeProperties: (keyof SplideConfig)[] = [
       'perPage', 'perMove', 'gap', 'width', 'height',
       'paddingLeft', 'paddingRight', 'paddingTop', 'paddingBottom',
       'speed', 'rewindSpeed', 'interval', 'flickPower'
     ];
-    if (cascadeProperties.includes(key)) {
-      const cascadedConfig = cascadeToSmallerBreakpoints(updatedConfig, key, value, activeBreakpoint);
-      updatedConfig = {
-        ...cascadedConfig,
-        breakpoints: cascadedConfig.breakpoints || {}
-      };
-    }
+    // Cascada desactivada - cada breakpoint es independiente
+    // if (cascadeProperties.includes(key) && activeBreakpoint !== null) {
+    //   const cascadedConfig = cascadeToSmallerBreakpoints(updatedConfig, key, value, activeBreakpoint);
+    //   updatedConfig = {
+    //     ...cascadedConfig,
+    //     breakpoints: cascadedConfig.breakpoints || {}
+    //   };
+    // }
     
     onChange(updatedConfig);
   };
@@ -262,10 +265,28 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
   };
 
   const getCurrentValue = (key: keyof SplideConfig, defaultValue: any = ''): any => {
-    if (activeBreakpoint) {
-      return config.breakpoints?.[activeBreakpoint]?.[key] ?? config[key] ?? defaultValue;
-    }
-    return config[key] ?? defaultValue;
+    // Herencia con orden: Desktop → Laptop (1280) → Tablet (767) → Mobile (480)
+    const getInheritedValue = (): any => {
+      if (activeBreakpoint === null) {
+        // Desktop - sin herencia
+        return config[key];
+      }
+      if (activeBreakpoint === 1280) {
+        // Laptop - hereda de Desktop
+        return config.breakpoints?.[1280]?.[key] ?? config[key];
+      }
+      if (activeBreakpoint === 767) {
+        // Tablet - hereda de Laptop, luego Desktop
+        return config.breakpoints?.[767]?.[key] ?? config.breakpoints?.[1280]?.[key] ?? config[key];
+      }
+      if (activeBreakpoint === 480) {
+        // Mobile - hereda de Tablet, luego Laptop, luego Desktop
+        return config.breakpoints?.[480]?.[key] ?? config.breakpoints?.[767]?.[key] ?? config.breakpoints?.[1280]?.[key] ?? config[key];
+      }
+      return defaultValue;
+    };
+
+    return getInheritedValue() ?? defaultValue;
   };
 
   const parseDimensionValue = (dimension: string = '0px'): { value: string; unit: string } => {
@@ -318,17 +339,6 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
   };
 
   const handleReset = () => {
-    const initialConfig = configSections.reduce((acc, section) => {
-      section.fields.forEach((field) => {
-        if (field.defaultValue !== undefined && field.defaultValue !== null) {
-          if (field.key in acc) {
-            (acc as any)[field.key] = field.defaultValue;
-          }
-        }
-      });
-      return acc;
-    }, {} as SplideConfig);
-
     if (activeBreakpoint) {
       // Reset only the active breakpoint
       onChange({
@@ -340,8 +350,11 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
       });
       toast.success(t('config.breakpoint_reset', { breakpoint: activeBreakpoint }));
     } else {
-      // Reset all configuration
-      onChange({ ...initialConfig });
+      // Reset Desktop configuration - mantener breakpoints existentes
+      onChange({
+        ...initialConfig,
+        breakpoints: config.breakpoints,
+      });
       toast.success(t('config.all_reset'));
     }
   };
