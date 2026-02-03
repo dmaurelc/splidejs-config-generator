@@ -9,7 +9,7 @@ interface LanguageContextType {
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export const useLanguage = () => {
@@ -107,7 +107,8 @@ const translations = {
     "field.fixedHeight": "Alto Fijo",
     "field.fixedHeight.desc": "Alto fijo de los slides",
     "field.heightRatio": "Ratio de Alto",
-    "field.heightRatio.desc": "Altura como ratio del ancho (0.3 = 30% del ancho)",
+    "field.heightRatio.desc":
+      "Altura como ratio del ancho (0.3 = 30% del ancho)",
     "field.autoWidth": "Ancho Automático",
     "field.autoWidth.desc": "El ancho del slide se determina por el elemento",
     "field.autoHeight": "Alto Automático",
@@ -145,13 +146,22 @@ const translations = {
     "field.pauseOnFocus": "Pausar al Enfocar",
     "field.pauseOnFocus.desc": "Pausar autoplay al enfocar el slider",
     "field.resetProgress": "Resetear Progreso",
-    "field.resetProgress.desc": "Resetear el temporizador de autoplay al reanudar",
+    "field.resetProgress.desc":
+      "Resetear el temporizador de autoplay al reanudar",
+    "field.wheel": "Desplazamiento con Rueda",
+    "field.wheel.desc": "Permitir navegar con la rueda del ratón",
+    "field.releaseWheel": "Liberar Rueda",
+    "field.releaseWheel.desc":
+      "Permite que la página se desplace después del último slide",
 
     // Controls
     "field.arrows": "Flechas",
     "field.arrows.desc": "Mostrar flechas de navegación",
     "field.pagination": "Paginación",
     "field.pagination.desc": "Mostrar puntos de paginación",
+    "field.paginationKeyboard": "Paginación con Teclado",
+    "field.paginationKeyboard.desc":
+      "Habilitar la navegación por paginación con el teclado",
     "field.drag": "Arrastre",
     "field.drag.desc": "Habilitar arrastre para deslizar",
     "field.rewind": "Rebobinar",
@@ -177,11 +187,14 @@ const translations = {
     "field.flickMaxPages.desc":
       "Límite de páginas que puede avanzar con un flick",
     "field.dragAngleThreshold": "Umbral de Ángulo de Arrastre",
-    "field.dragAngleThreshold.desc": "Ángulo mínimo para iniciar el arrastre (grados)",
+    "field.dragAngleThreshold.desc":
+      "Ángulo mínimo para iniciar el arrastre (grados)",
     "field.swipeDistanceThreshold": "Umbral de Distancia de Swipe",
-    "field.swipeDistanceThreshold.desc": "Distancia mínima para considerar como swipe (px)",
+    "field.swipeDistanceThreshold.desc":
+      "Distancia mínima para considerar como swipe (px)",
     "field.flickVelocityThreshold": "Umbral de Velocidad de Flick",
-    "field.flickVelocityThreshold.desc": "Velocidad mínima para considerar como flick",
+    "field.flickVelocityThreshold.desc":
+      "Velocidad mínima para considerar como flick",
 
     // Performance
     "field.lazyLoad": "Carga Diferida",
@@ -206,13 +219,15 @@ const translations = {
     "field.keyboard.desc":
       "Configurar comportamiento de navegación por teclado",
     "field.arrowPath": "Path de Flecha",
-    "field.arrowPath.desc": "Path SVG personalizado para las flechas de navegación",
+    "field.arrowPath.desc":
+      "Path SVG personalizado para las flechas de navegación",
 
     // Advanced
     "field.isNavigation": "Es Navegación",
     "field.isNavigation.desc": "Si este slider controla otro slider",
     "field.trimSpace": "Recortar Espacio",
-    "field.trimSpace.desc": "Recortar espacio vacío al final. 'move' siempre mueve el slider",
+    "field.trimSpace.desc":
+      "Recortar espacio vacío al final. 'move' siempre mueve el slider",
     "field.updateOnMove": "Actualizar al Mover",
     "field.updateOnMove.desc": "Actualizar el slider al mover",
     "field.destroy": "Destruir",
@@ -222,11 +237,15 @@ const translations = {
     "field.throttle": "Throttle",
     "field.throttle.desc": "Throttle para el evento de resize (ms)",
     "field.accessibility": "Accesibilidad",
-    "field.accessibility.desc": "Habilitar atributos ARIA y textos para screen reader",
+    "field.accessibility.desc":
+      "Habilitar atributos ARIA y textos para screen reader",
     "field.slideFocus": "Focus en Slides",
-    "field.slideFocus.desc": "Agregar tabindex=\"0\" a los slides visibles",
+    "field.slideFocus.desc": 'Agregar tabindex="0" a los slides visibles',
     "field.i18n": "Internacionalización",
     "field.i18n.desc": "Objeto JSON con textos para i18n (opcional)",
+    "field.focusableNodes": "Nodos Enfocables",
+    "field.focusableNodes.desc":
+      "Selector CSS para elementos enfocables dentro de los slides",
 
     // Options
     "option.slide": "Deslizar",
@@ -264,6 +283,12 @@ const translations = {
     "code.edit": "Editar",
     "code.save": "Guardar",
     "code.cancel": "Cancelar",
+    "code.download": "Descargar",
+    "code.downloaded": "Archivo descargado correctamente",
+    "code.json": "JSON",
+    "code.vanilla": "Vanilla JS",
+    "code.react": "React",
+    "code.html": "HTML / CSS",
     "code.config_updated": "Configuración actualizada correctamente",
     "code.json_error": "Error al parsear JSON",
     "config.title": "Configuración",
@@ -276,6 +301,9 @@ const translations = {
       "Restablecer configuraciones del breakpoint {breakpoint}px",
     "config.reset_all_tooltip":
       "Restablecer todas las configuraciones a valores por defecto",
+    "config.search_placeholder": "Buscar opciones...",
+"config.no_results": "No se encontraron resultados",
+"config.no_results_subtitle": "Intenta con otros términos de búsqueda",
 
     // Additional options values
     "option.start": "Inicio",
@@ -349,7 +377,8 @@ const translations = {
     "field.fixedHeight": "Fixed Height",
     "field.fixedHeight.desc": "Fixed height of slides",
     "field.heightRatio": "Height Ratio",
-    "field.heightRatio.desc": "Height as ratio to slider width (0.3 = 30% of width)",
+    "field.heightRatio.desc":
+      "Height as ratio to slider width (0.3 = 30% of width)",
     "field.autoWidth": "Auto Width",
     "field.autoWidth.desc": "Slide width determined by element width itself",
     "field.autoHeight": "Auto Height",
@@ -388,12 +417,19 @@ const translations = {
     "field.pauseOnFocus.desc": "Pause autoplay when slider is focused",
     "field.resetProgress": "Reset Progress",
     "field.resetProgress.desc": "Reset autoplay timer progress when resumed",
+    "field.wheel": "Mouse Wheel",
+    "field.wheel.desc": "Enable slider movement with mouse wheel",
+    "field.releaseWheel": "Release Wheel",
+    "field.releaseWheel.desc": "Allow page scrolling after the last slide",
 
     // Controls
     "field.arrows": "Arrows",
     "field.arrows.desc": "Show navigation arrows",
     "field.pagination": "Pagination",
     "field.pagination.desc": "Show pagination dots",
+    "field.paginationKeyboard": "Pagination Keyboard",
+    "field.paginationKeyboard.desc":
+      "Enable keyboard navigation for pagination",
     "field.drag": "Drag",
     "field.drag.desc": "Enable drag to slide",
     "field.rewind": "Rewind",
@@ -418,9 +454,11 @@ const translations = {
     "field.dragAngleThreshold": "Drag Angle Threshold",
     "field.dragAngleThreshold.desc": "Angle threshold for drag (degrees)",
     "field.swipeDistanceThreshold": "Swipe Distance Threshold",
-    "field.swipeDistanceThreshold.desc": "Distance threshold for swipe vs flick (px)",
+    "field.swipeDistanceThreshold.desc":
+      "Distance threshold for swipe vs flick (px)",
     "field.flickVelocityThreshold": "Flick Velocity Threshold",
-    "field.flickVelocityThreshold.desc": "Velocity threshold for flick vs swipe",
+    "field.flickVelocityThreshold.desc":
+      "Velocity threshold for flick vs swipe",
 
     // Performance
     "field.lazyLoad": "Lazy Load",
@@ -449,7 +487,8 @@ const translations = {
     "field.isNavigation": "Is Navigation",
     "field.isNavigation.desc": "Whether this slider controls another slider",
     "field.trimSpace": "Trim Space",
-    "field.trimSpace.desc": "Trim empty space at ends. 'move' always moves the slider",
+    "field.trimSpace.desc":
+      "Trim empty space at ends. 'move' always moves the slider",
     "field.updateOnMove": "Update on Move",
     "field.updateOnMove.desc": "Update the slider when moving",
     "field.destroy": "Destroy",
@@ -459,11 +498,15 @@ const translations = {
     "field.throttle": "Throttle",
     "field.throttle.desc": "Throttle duration for resize event (ms)",
     "field.accessibility": "Accessibility",
-    "field.accessibility.desc": "Enable ARIA attributes and screen reader texts",
+    "field.accessibility.desc":
+      "Enable ARIA attributes and screen reader texts",
     "field.slideFocus": "Slide Focus",
-    "field.slideFocus.desc": "Add tabindex=\"0\" to visible slides",
+    "field.slideFocus.desc": 'Add tabindex="0" to visible slides',
     "field.i18n": "Internationalization",
     "field.i18n.desc": "JSON object with i18n texts (optional)",
+    "field.focusableNodes": "Focusable Nodes",
+    "field.focusableNodes.desc":
+      "CSS selector for focusable elements inside slides",
 
     // Options
     "option.slide": "Slide",
@@ -501,6 +544,12 @@ const translations = {
     "code.edit": "Edit",
     "code.save": "Save",
     "code.cancel": "Cancel",
+    "code.download": "Download",
+    "code.downloaded": "File downloaded successfully",
+    "code.json": "JSON",
+    "code.vanilla": "Vanilla JS",
+    "code.react": "React",
+    "code.html": "HTML / CSS",
     "code.config_updated": "Configuration updated successfully",
     "code.json_error": "Error parsing JSON",
     "config.title": "Configuration",
@@ -510,6 +559,9 @@ const translations = {
     "config.reset_breakpoint_tooltip":
       "Reset breakpoint {breakpoint}px settings",
     "config.reset_all_tooltip": "Reset all settings to defaults",
+    "config.search_placeholder": "Search options...",
+"config.no_results": "No results found",
+"config.no_results_subtitle": "Try different search terms",
 
     // Additional options values
     "option.start": "Start",
