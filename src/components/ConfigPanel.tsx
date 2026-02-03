@@ -240,15 +240,9 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
     } else {
       updatedConfig = { ...config, [key]: value };
     }
-    
+
     // NOTA: Cascada desactivada - cada breakpoint es completamente independiente
     // Los cambios solo se aplican al breakpoint o config base que se está editando
-    const cascadeProperties: (keyof SplideConfig)[] = [
-      'perPage', 'perMove', 'gap', 'width', 'height',
-      'paddingLeft', 'paddingRight', 'paddingTop', 'paddingBottom',
-      'speed', 'rewindSpeed', 'interval', 'flickPower'
-    ];
-    // Cascada desactivada - cada breakpoint es independiente
     // if (cascadeProperties.includes(key) && activeBreakpoint !== null) {
     //   const cascadedConfig = cascadeToSmallerBreakpoints(updatedConfig, key, value, activeBreakpoint);
     //   updatedConfig = {

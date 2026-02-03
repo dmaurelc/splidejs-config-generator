@@ -26,7 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { configSections } from "../data/configSections";
 import { useIsMobile } from "../hooks/useIsMobile";
 
 interface PreviewProps {
@@ -451,7 +450,7 @@ export const Preview: React.FC<PreviewProps> = ({
                   height: currentConfig.height || "100%",
                   pagination: currentConfig.pagination !== false,
                   start: currentConfig.start || 0,
-                }}
+                } as any}
                 className="h-full"
                 key={`${activeBreakpoint}-${totalSlides}-${JSON.stringify(
                   currentConfig,

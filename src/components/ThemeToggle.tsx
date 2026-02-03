@@ -11,7 +11,7 @@ import {
 import { useLanguage } from "../contexts/LanguageContext";
 
 export const ThemeToggle: React.FC = () => {
-  const { theme, effectiveTheme, setTheme } = useTheme();
+  const { effectiveTheme, setTheme } = useTheme();
   const { t } = useLanguage();
 
   const cycleTheme = () => {
