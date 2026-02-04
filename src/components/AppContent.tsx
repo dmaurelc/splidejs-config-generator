@@ -112,7 +112,12 @@ export const AppContent: React.FC = () => {
             isFullscreen ? "hidden" : ""
           }`}
         >
-          <h1 className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-primary to-primary/60">
+          <h1 className="flex gap-2 items-center text-xl font-bold text-foreground">
+            <img
+              src="/favicon.png"
+              alt="SplideJS Config Generator"
+              className="w-6 h-6"
+            />
             {t("app.title")}
           </h1>
           <div className="flex items-center gap-4">

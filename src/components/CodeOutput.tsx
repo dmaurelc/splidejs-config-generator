@@ -368,7 +368,7 @@ export const MySlider = () => {
   return (
     <div
       className={cn(
-        "bg-card flex flex-col overflow-hidden h-full rounded-tr-2xl w-[400px] min-w-[400px] max-w-[400px]",
+        "bg-card flex flex-col overflow-hidden h-full rounded-tr-2xl md:w-100 w-full min-w-100 md:max-w-100 max-w-full",
         className,
       )}
     >
@@ -491,7 +491,7 @@ export const MySlider = () => {
 
         {/* Format Selector */}
         {!isEditing && (
-          <div className="flex gap-1 px-2 pb-2 overflow-x-auto no-scrollbar">
+          <div className="flex gap-1 px-2 py-2 overflow-x-auto no-scrollbar border-t border-border">
             {(["json", "vanilla", "react", "html"] as ExportFormat[]).map(
               (format) => (
                 <Button

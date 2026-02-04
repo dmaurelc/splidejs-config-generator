@@ -5,7 +5,48 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.2.0] - 2026-02-04
+
+### Added
+
+- **Premium Design System**:
+  - Glassmorphism effects with `.glass-panel` utility
+  - Premium shadows with `.premium-shadow` class
+  - Smooth animations: `fade-in` and `scale-up`
+  - Hover lift effects with `.hover-lift` utility
+  - Gradient tokens for primary and accent colors
+
+- **New Configuration Options**:
+  - `fixedWidth` - Fixed width for slides
+  - `fixedHeight` - Fixed height for slides
+  - `paginationKeyboard` - Enable keyboard navigation for pagination
+  - `wheel` - Enable slider movement with mouse wheel
+  - `releaseWheel` - Allow page scrolling after last slide
+  - `focusableNodes` - CSS selector for focusable elements
+
+- **Code Output Enhancements**:
+  - Multiple export formats: JSON, Vanilla JS, React, HTML/CSS
+  - Download functionality for exported code
+  - Improved code formatting and syntax highlighting
+
+- **Sidebar Search Filter**:
+  - Real-time search through configuration options
+  - Filter sections by field names
+  - No results state with helpful message
+
+- **Brand Identity**:
+  - App logo in header (favicon.png)
+  - Consistent branding across light/dark themes
+
+### Changed
+
+- **HTML Formatting**: Improved HTML syntax with self-closing tags for better compatibility
+- **Favicon**: Changed from favicon.svg to favicon.png
+- **Translations**: Added Spanish and English translations for all new options
+
+---
+
+## [0.1.0] - 2024-XX-XX
 
 ### Added
 
