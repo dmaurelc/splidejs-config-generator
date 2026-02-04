@@ -1,9 +1,9 @@
 export interface SplideConfig {
   // Basic Options
-  type?: 'loop' | 'slide' | 'fade';
+  type?: "loop" | "slide" | "fade";
   perPage?: number;
   perMove?: number;
-  focus?: number | 'center';
+  focus?: number | "center";
   gap?: string;
 
   // Dimensions
@@ -12,14 +12,17 @@ export interface SplideConfig {
   heightRatio?: number;
   autoWidth?: boolean;
   autoHeight?: boolean;
+  fixedWidth?: string;
+  fixedHeight?: string;
 
   // Timing
   speed?: number;
   interval?: number;
 
   // Controls
-  arrows?: boolean | 'slider';
-  pagination?: boolean | 'slider';
+  arrows?: boolean | "slider";
+  pagination?: boolean | "slider";
+  paginationKeyboard?: boolean;
   drag?: boolean;
   rewind?: boolean;
 
@@ -30,13 +33,13 @@ export interface SplideConfig {
   resetProgress?: boolean;
 
   // Position & Layout
-  direction?: 'ltr' | 'rtl' | 'ttb';
+  direction?: "ltr" | "rtl" | "ttb";
   start?: number;
 
   // Padding Configuration
   padding?: { left?: string; right?: string; top?: string; bottom?: string };
-  paddingType?: 'horizontal' | 'vertical';
-  paddingUnit?: 'px' | 'rem' | '%' | 'em' | 'vw';
+  paddingType?: "horizontal" | "vertical";
+  paddingUnit?: "px" | "rem" | "%" | "em" | "vw";
   paddingLeft?: number;
   paddingRight?: number;
   paddingTop?: number;
@@ -44,7 +47,7 @@ export interface SplideConfig {
 
   // Transitions & Animation
   easing?: string;
-  dragMode?: boolean | 'free';
+  dragMode?: boolean | "free";
   snap?: boolean;
   flickPower?: number;
   flickMaxPages?: number;
@@ -55,7 +58,7 @@ export interface SplideConfig {
   flickVelocityThreshold?: number;
 
   // Performance & Lazy Loading
-  lazyLoad?: boolean | 'nearby' | 'sequential';
+  lazyLoad?: boolean | "nearby" | "sequential";
   preloadPages?: number;
   waitForTransition?: boolean;
 
@@ -64,7 +67,7 @@ export interface SplideConfig {
   cloneStatus?: boolean;
 
   // Keyboard Navigation
-  keyboard?: boolean | 'global' | 'focused';
+  keyboard?: boolean | "global" | "focused";
 
   // Accessibility
   accessibility?: boolean;
@@ -74,10 +77,13 @@ export interface SplideConfig {
   rewindSpeed?: number;
   rewindByDrag?: boolean;
   isNavigation?: boolean;
-  trimSpace?: boolean | 'move';
+  trimSpace?: boolean | "move";
   updateOnMove?: boolean;
   destroy?: boolean;
   cover?: boolean;
+  wheel?: boolean;
+  releaseWheel?: boolean;
+  focusableNodes?: string;
   throttle?: number;
 
   // Breakpoints
@@ -92,7 +98,7 @@ export interface Breakpoint {
 export interface ConfigField {
   key: keyof SplideConfig;
   label: string;
-  type: 'boolean' | 'select' | 'dimension' | 'number' | 'text';
+  type: "boolean" | "select" | "dimension" | "number" | "text";
   description: string;
   defaultValue?: string | number | boolean | null;
   options?: string[];
@@ -103,5 +109,6 @@ export interface ConfigField {
 
 export interface ConfigSection {
   title: string;
+  icon?: string;
   fields: ConfigField[];
 }

@@ -1,23 +1,35 @@
-import React from 'react';
-import { Info, RotateCcw } from 'lucide-react';
-import { configSections } from '../data/configSections';
-import { SplideConfig, ConfigField } from '../types/config';
-import { useLanguage } from '../contexts/LanguageContext';
-import { initialConfig } from '../config/initialConfig';
-import { 
-  Accordion, 
-  AccordionContent, 
-  AccordionItem, 
-  AccordionTrigger 
-} from './ui/accordion';
-import { Label } from './ui/label';
-import { Input } from './ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Switch } from './ui/switch';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
-import { Button } from './ui/button';
-import { cn } from '../lib/utils';
-import { toast } from 'sonner';
+import React from "react";
+import { Info, RotateCcw, Search } from "lucide-react";
+import { configSections } from "../data/configSections";
+import { SplideConfig, ConfigField } from "../types/config";
+import { useLanguage } from "../contexts/LanguageContext";
+import { initialConfig } from "../config/initialConfig";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "./ui/accordion";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { Switch } from "./ui/switch";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
+import { Button } from "./ui/button";
+import { SectionIcon } from "./SectionIcon";
+import { cn } from "../lib/utils";
+import { toast } from "sonner";
 
 interface ConfigPanelProps {
   config: SplideConfig;
@@ -26,113 +38,201 @@ interface ConfigPanelProps {
   className?: string;
 }
 
-export const ConfigPanel: React.FC<ConfigPanelProps> = ({ 
-  config, 
+export const ConfigPanel: React.FC<ConfigPanelProps> = ({
+  config,
   onChange,
   activeBreakpoint,
-  className
+  className,
 }) => {
   const { t } = useLanguage();
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
+
+  const filteredSections = React.useMemo(() => {
+    if (!searchQuery.trim()) return configSections;
+
+    const query = searchQuery.toLowerCase();
+
+    return configSections
+      .map((section) => {
+        const sectionTitleMatches = t(section.title)
+          .toLowerCase()
+          .includes(query);
+
+        const matchingFields = section.fields.filter((field) => {
+          return (
+            field.key.toLowerCase().includes(query) ||
+            t(field.label).toLowerCase().includes(query) ||
+            t(field.description).toLowerCase().includes(query)
+          );
+        });
+
+        if (sectionTitleMatches || matchingFields.length > 0) {
+          return {
+            ...section,
+            fields: sectionTitleMatches ? section.fields : matchingFields,
+          };
+        }
+
+        return null;
+      })
+      .filter(Boolean) as typeof configSections;
+  }, [searchQuery, t]);
+
+  // Abrir automáticamente las secciones que tienen resultados
+  React.useEffect(() => {
+    if (searchQuery.trim()) {
+      const matchedTitles = filteredSections.map((s) => s.title);
+      setExpandedItems(matchedTitles);
+    } else {
+      // Opcional: podrías resetear o mantener el estado previo.
+      // Por ahora lo dejamos vacío si no hay búsqueda para limpiar la vista.
+      setExpandedItems([]);
+    }
+  }, [searchQuery, filteredSections]);
   // Función para ajustar valores automáticamente según el breakpoint
-  const getSmartValue = (key: keyof SplideConfig, originalValue: any, targetBreakpoint: number): any => {
-    if (key === 'perPage' && typeof originalValue === 'number') {
+  const getSmartValue = (
+    key: keyof SplideConfig,
+    originalValue: any,
+    targetBreakpoint: number,
+  ): any => {
+    if (key === "perPage" && typeof originalValue === "number") {
       // Ajustar perPage según el tamaño de pantalla
-      if (targetBreakpoint <= 480) { // Mobile
+      if (targetBreakpoint <= 480) {
+        // Mobile
         return Math.min(originalValue, 2); // Máximo 2 en mobile
-      } else if (targetBreakpoint <= 767) { // Tablet
+      } else if (targetBreakpoint <= 767) {
+        // Tablet
         return Math.min(originalValue, 3); // Máximo 3 en tablet
-      } else if (targetBreakpoint <= 1280) { // Laptop
+      } else if (targetBreakpoint <= 1280) {
+        // Laptop
         return Math.min(originalValue, Math.max(3, originalValue - 1)); // Reducir en 1 pero mínimo 3
       }
     }
-    
-    if (key === 'perMove' && typeof originalValue === 'number') {
+
+    if (key === "perMove" && typeof originalValue === "number") {
       // perMove nunca debe ser mayor que perPage
-      const adjustedPerPage = getSmartValue('perPage', getCurrentValue('perPage', 3), targetBreakpoint);
+      const adjustedPerPage = getSmartValue(
+        "perPage",
+        getCurrentValue("perPage", 3),
+        targetBreakpoint,
+      );
       return Math.min(originalValue, adjustedPerPage);
     }
-    
-    if (key === 'gap' && typeof originalValue === 'string') {
+
+    if (key === "gap" && typeof originalValue === "string") {
       // Reducir gap en pantallas más pequeñas
       const numValue = parseFloat(originalValue);
       if (!isNaN(numValue)) {
-        const unit = originalValue.replace(numValue.toString(), '');
-        if (targetBreakpoint <= 480) { // Mobile
+        const unit = originalValue.replace(numValue.toString(), "");
+        if (targetBreakpoint <= 480) {
+          // Mobile
           return `${Math.max(0.5, numValue * 0.6)}${unit}`;
-        } else if (targetBreakpoint <= 767) { // Tablet
+        } else if (targetBreakpoint <= 767) {
+          // Tablet
           return `${Math.max(0.75, numValue * 0.8)}${unit}`;
         }
       }
     }
-    
+
     // Ajustar dimensiones (width, height) para pantallas más pequeñas
-    if ((key === 'width' || key === 'height') && typeof originalValue === 'string') {
+    if (
+      (key === "width" || key === "height") &&
+      typeof originalValue === "string"
+    ) {
       const numValue = parseFloat(originalValue);
       if (!isNaN(numValue)) {
-        const unit = originalValue.replace(numValue.toString(), '');
+        const unit = originalValue.replace(numValue.toString(), "");
         // Solo ajustar si la unidad es px, rem, o em (no porcentajes o viewport units)
-        if (['px', 'rem', 'em'].includes(unit)) {
-          if (targetBreakpoint <= 480) { // Mobile
+        if (["px", "rem", "em"].includes(unit)) {
+          if (targetBreakpoint <= 480) {
+            // Mobile
             return `${Math.max(200, numValue * 0.7)}${unit}`;
-          } else if (targetBreakpoint <= 767) { // Tablet
+          } else if (targetBreakpoint <= 767) {
+            // Tablet
             return `${Math.max(250, numValue * 0.85)}${unit}`;
           }
         }
       }
     }
-    
+
     // Ajustar padding para pantallas más pequeñas
-    if (['paddingLeft', 'paddingRight', 'paddingTop', 'paddingBottom'].includes(key) && typeof originalValue === 'number') {
-      if (targetBreakpoint <= 480) { // Mobile
+    if (
+      ["paddingLeft", "paddingRight", "paddingTop", "paddingBottom"].includes(
+        key,
+      ) &&
+      typeof originalValue === "number"
+    ) {
+      if (targetBreakpoint <= 480) {
+        // Mobile
         return Math.max(0, Math.floor(originalValue * 0.6));
-      } else if (targetBreakpoint <= 767) { // Tablet
+      } else if (targetBreakpoint <= 767) {
+        // Tablet
         return Math.max(0, Math.floor(originalValue * 0.8));
       }
     }
-    
+
     // Ajustar velocidades para pantallas más pequeñas (más rápido en móvil)
-    if ((key === 'speed' || key === 'rewindSpeed') && typeof originalValue === 'number') {
-      if (targetBreakpoint <= 480) { // Mobile
+    if (
+      (key === "speed" || key === "rewindSpeed") &&
+      typeof originalValue === "number"
+    ) {
+      if (targetBreakpoint <= 480) {
+        // Mobile
         return Math.max(200, Math.floor(originalValue * 0.8)); // Más rápido en móvil
-      } else if (targetBreakpoint <= 767) { // Tablet
+      } else if (targetBreakpoint <= 767) {
+        // Tablet
         return Math.max(250, Math.floor(originalValue * 0.9));
       }
     }
-    
+
     // Ajustar intervalo de autoplay para pantallas más pequeñas
-    if (key === 'interval' && typeof originalValue === 'number') {
-      if (targetBreakpoint <= 480) { // Mobile
+    if (key === "interval" && typeof originalValue === "number") {
+      if (targetBreakpoint <= 480) {
+        // Mobile
         return Math.max(3000, Math.floor(originalValue * 0.8)); // Intervalo más corto en móvil
-      } else if (targetBreakpoint <= 767) { // Tablet
+      } else if (targetBreakpoint <= 767) {
+        // Tablet
         return Math.max(4000, Math.floor(originalValue * 0.9));
       }
     }
-    
+
     // Ajustar flickPower para pantallas táctiles
-    if (key === 'flickPower' && typeof originalValue === 'number') {
-      if (targetBreakpoint <= 767) { // Mobile y Tablet (pantallas táctiles)
+    if (key === "flickPower" && typeof originalValue === "number") {
+      if (targetBreakpoint <= 767) {
+        // Mobile y Tablet (pantallas táctiles)
         return Math.max(300, Math.floor(originalValue * 0.7)); // Menos sensible en táctil
       }
     }
-    
+
     return originalValue;
   };
 
   // Función para propagar cambios a breakpoints inferiores
-  const cascadeToSmallerBreakpoints = (updatedConfig: SplideConfig, changedKey: keyof SplideConfig, newValue: any, currentBreakpoint: number | null): SplideConfig => {
-    const newBreakpoints = updatedConfig.breakpoints ? { ...updatedConfig.breakpoints } : {};
-    
+  const cascadeToSmallerBreakpoints = (
+    updatedConfig: SplideConfig,
+    changedKey: keyof SplideConfig,
+    newValue: any,
+    currentBreakpoint: number | null,
+  ): SplideConfig => {
+    const newBreakpoints = updatedConfig.breakpoints
+      ? { ...updatedConfig.breakpoints }
+      : {};
+
     if (!currentBreakpoint) {
       // Si estamos en desktop (sin breakpoint), propagar a todos los breakpoints
       const breakpointWidths = [1280, 767, 480]; // Laptop, Tablet, Mobile
-      
-      breakpointWidths.forEach(width => {
+
+      breakpointWidths.forEach((width) => {
         // Solo propagar si el breakpoint no tiene ya un valor personalizado para esta propiedad
-        if (!newBreakpoints[width] || (newBreakpoints[width] as any)[changedKey] === undefined) {
+        if (
+          !newBreakpoints[width] ||
+          (newBreakpoints[width] as any)[changedKey] === undefined
+        ) {
           const smartValue = getSmartValue(changedKey, newValue, width);
           newBreakpoints[width] = {
             ...newBreakpoints[width],
-            [changedKey]: smartValue
+            [changedKey]: smartValue,
           } as Partial<SplideConfig>;
         }
       });
@@ -140,114 +240,140 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
       // Si estamos en un breakpoint específico, propagar solo a los menores
       const breakpointWidths = [1280, 767, 480];
       const currentIndex = breakpointWidths.indexOf(currentBreakpoint);
-      
+
       if (currentIndex !== -1) {
         const smallerBreakpoints = breakpointWidths.slice(currentIndex + 1);
-        
-        smallerBreakpoints.forEach(width => {
+
+        smallerBreakpoints.forEach((width) => {
           // Solo propagar si el breakpoint no tiene ya un valor personalizado para esta propiedad
-          if (!newBreakpoints[width] || (newBreakpoints[width] as any)[changedKey] === undefined) {
+          if (
+            !newBreakpoints[width] ||
+            (newBreakpoints[width] as any)[changedKey] === undefined
+          ) {
             const smartValue = getSmartValue(changedKey, newValue, width);
             newBreakpoints[width] = {
               ...newBreakpoints[width],
-              [changedKey]: smartValue
+              [changedKey]: smartValue,
             } as Partial<SplideConfig>;
           }
         });
       }
     }
-    
+
     return { ...updatedConfig, breakpoints: newBreakpoints };
   };
 
-  const handleChange = (key: keyof SplideConfig, value: string | number | boolean): void => {
-    if (key === 'perPage' || key === 'perMove') {
+  const handleChange = (
+    key: keyof SplideConfig,
+    value: string | number | boolean,
+  ): void => {
+    if (key === "perPage" || key === "perMove") {
       value = Math.max(1, Number(value));
     }
 
     // Si el tipo cambia a fade, resetear perPage y perMove a 1
-    if (key === 'type' && value === 'fade') {
+    if (key === "type" && value === "fade") {
       if (activeBreakpoint) {
         const breakpointConfig: Partial<SplideConfig> = {
           ...config.breakpoints?.[activeBreakpoint],
           [key]: value,
           perPage: 1,
-          perMove: 1
+          perMove: 1,
         };
-        
+
         let updatedConfig = {
           ...config,
           breakpoints: {
             ...config.breakpoints,
-            [activeBreakpoint]: breakpointConfig
-          }
+            [activeBreakpoint]: breakpointConfig,
+          },
         };
-        
+
         // Propagar perPage y perMove a breakpoints menores
         updatedConfig = {
-          ...cascadeToSmallerBreakpoints(updatedConfig, 'perPage', 1, activeBreakpoint),
-          breakpoints: cascadeToSmallerBreakpoints(updatedConfig, 'perPage', 1, activeBreakpoint).breakpoints || {}
+          ...cascadeToSmallerBreakpoints(
+            updatedConfig,
+            "perPage",
+            1,
+            activeBreakpoint,
+          ),
+          breakpoints:
+            cascadeToSmallerBreakpoints(
+              updatedConfig,
+              "perPage",
+              1,
+              activeBreakpoint,
+            ).breakpoints || {},
         };
         updatedConfig = {
-          ...cascadeToSmallerBreakpoints(updatedConfig, 'perMove', 1, activeBreakpoint),
-          breakpoints: cascadeToSmallerBreakpoints(updatedConfig, 'perMove', 1, activeBreakpoint).breakpoints || {}
+          ...cascadeToSmallerBreakpoints(
+            updatedConfig,
+            "perMove",
+            1,
+            activeBreakpoint,
+          ),
+          breakpoints:
+            cascadeToSmallerBreakpoints(
+              updatedConfig,
+              "perMove",
+              1,
+              activeBreakpoint,
+            ).breakpoints || {},
         };
-        
+
         onChange(updatedConfig);
       } else {
-        let updatedConfig: SplideConfig = { 
-          ...config, 
-          [key]: value as 'loop' | 'slide' | 'fade',
+        let updatedConfig: SplideConfig = {
+          ...config,
+          [key]: value as "loop" | "slide" | "fade",
           perPage: 1,
-          perMove: 1
+          perMove: 1,
         };
-        
+
         // Propagar a todos los breakpoints
         updatedConfig = {
-          ...cascadeToSmallerBreakpoints(updatedConfig, 'perPage', 1, null),
-          breakpoints: cascadeToSmallerBreakpoints(updatedConfig, 'perPage', 1, null).breakpoints || {}
+          ...cascadeToSmallerBreakpoints(updatedConfig, "perPage", 1, null),
+          breakpoints:
+            cascadeToSmallerBreakpoints(updatedConfig, "perPage", 1, null)
+              .breakpoints || {},
         };
         updatedConfig = {
-          ...cascadeToSmallerBreakpoints(updatedConfig, 'perMove', 1, null),
-          breakpoints: cascadeToSmallerBreakpoints(updatedConfig, 'perMove', 1, null).breakpoints || {}
+          ...cascadeToSmallerBreakpoints(updatedConfig, "perMove", 1, null),
+          breakpoints:
+            cascadeToSmallerBreakpoints(updatedConfig, "perMove", 1, null)
+              .breakpoints || {},
         };
-        
+
         onChange(updatedConfig);
       }
       return;
     }
 
     let updatedConfig: SplideConfig;
-    
+
     if (activeBreakpoint) {
       const breakpointConfig = {
         ...config.breakpoints?.[activeBreakpoint],
-        [key]: value
+        [key]: value,
       };
-      
+
       const cleanedConfig = Object.fromEntries(
-        Object.entries(breakpointConfig).filter(([, v]) => v != null)
+        Object.entries(breakpointConfig).filter(([, v]) => v != null),
       );
-      
+
       updatedConfig = {
         ...config,
         breakpoints: {
           ...config.breakpoints,
-          [activeBreakpoint]: cleanedConfig
-        }
+          [activeBreakpoint]: cleanedConfig,
+        },
       };
     } else {
       updatedConfig = { ...config, [key]: value };
     }
-    
+
     // NOTA: Cascada desactivada - cada breakpoint es completamente independiente
     // Los cambios solo se aplican al breakpoint o config base que se está editando
-    const cascadeProperties: (keyof SplideConfig)[] = [
-      'perPage', 'perMove', 'gap', 'width', 'height',
-      'paddingLeft', 'paddingRight', 'paddingTop', 'paddingBottom',
-      'speed', 'rewindSpeed', 'interval', 'flickPower'
-    ];
-    // Cascada desactivada - cada breakpoint es independiente
     // if (cascadeProperties.includes(key) && activeBreakpoint !== null) {
     //   const cascadedConfig = cascadeToSmallerBreakpoints(updatedConfig, key, value, activeBreakpoint);
     //   updatedConfig = {
@@ -255,16 +381,23 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
     //     breakpoints: cascadedConfig.breakpoints || {}
     //   };
     // }
-    
+
     onChange(updatedConfig);
   };
 
-  const handleDimensionChange = (key: keyof SplideConfig, value: string, unit: string): void => {
-    const numValue = value === '' ? 0 : parseFloat(value);
+  const handleDimensionChange = (
+    key: keyof SplideConfig,
+    value: string,
+    unit: string,
+  ): void => {
+    const numValue = value === "" ? 0 : parseFloat(value);
     handleChange(key, `${numValue}${unit}`);
   };
 
-  const getCurrentValue = (key: keyof SplideConfig, defaultValue: any = ''): any => {
+  const getCurrentValue = (
+    key: keyof SplideConfig,
+    defaultValue: any = "",
+  ): any => {
     // Herencia con orden: Desktop → Laptop (1280) → Tablet (767) → Mobile (480)
     const getInheritedValue = (): any => {
       if (activeBreakpoint === null) {
@@ -277,11 +410,20 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
       }
       if (activeBreakpoint === 767) {
         // Tablet - hereda de Laptop, luego Desktop
-        return config.breakpoints?.[767]?.[key] ?? config.breakpoints?.[1280]?.[key] ?? config[key];
+        return (
+          config.breakpoints?.[767]?.[key] ??
+          config.breakpoints?.[1280]?.[key] ??
+          config[key]
+        );
       }
       if (activeBreakpoint === 480) {
         // Mobile - hereda de Tablet, luego Laptop, luego Desktop
-        return config.breakpoints?.[480]?.[key] ?? config.breakpoints?.[767]?.[key] ?? config.breakpoints?.[1280]?.[key] ?? config[key];
+        return (
+          config.breakpoints?.[480]?.[key] ??
+          config.breakpoints?.[767]?.[key] ??
+          config.breakpoints?.[1280]?.[key] ??
+          config[key]
+        );
       }
       return defaultValue;
     };
@@ -289,9 +431,13 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
     return getInheritedValue() ?? defaultValue;
   };
 
-  const parseDimensionValue = (dimension: string = '0px'): { value: string; unit: string } => {
+  const parseDimensionValue = (
+    dimension: string = "0px",
+  ): { value: string; unit: string } => {
     const match = dimension.match(/^([\d.]+)(.+)$/);
-    return match ? { value: match[1], unit: match[2] } : { value: '0', unit: 'px' };
+    return match
+      ? { value: match[1], unit: match[2] }
+      : { value: "0", unit: "px" };
   };
 
   const getDisplayValue = (field: ConfigField, value: any): string => {
@@ -303,38 +449,44 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
   };
 
   const shouldShowField = (field: ConfigField): boolean => {
-    const paddingType = getCurrentValue('paddingType', 'horizontal');
-    const currentType = getCurrentValue('type', 'slide');
-    const rewindEnabled = getCurrentValue('rewind', false);
-    
+    const paddingType = getCurrentValue("paddingType", "horizontal");
+    const currentType = getCurrentValue("type", "slide");
+    const rewindEnabled = getCurrentValue("rewind", false);
+
     // Ocultar campos de padding según el tipo
-    if (paddingType === 'horizontal') {
-      if (['paddingTop', 'paddingBottom'].includes(field.key)) {
+    if (paddingType === "horizontal") {
+      if (["paddingTop", "paddingBottom"].includes(field.key)) {
         return false;
       }
     }
-    
-    if (paddingType === 'vertical') {
-      if (['paddingLeft', 'paddingRight'].includes(field.key)) {
+
+    if (paddingType === "vertical") {
+      if (["paddingLeft", "paddingRight"].includes(field.key)) {
         return false;
       }
     }
 
     // Mostrar rewind solo para tipos slide y fade
-    if (field.key === 'rewind' && currentType === 'loop') {
+    if (field.key === "rewind" && currentType === "loop") {
       return false;
     }
 
     // Mostrar opciones de rewind solo cuando rewind está activo
-    if ((field.key === 'rewindByDrag' || field.key === 'rewindSpeed') && !rewindEnabled) {
+    if (
+      (field.key === "rewindByDrag" || field.key === "rewindSpeed") &&
+      !rewindEnabled
+    ) {
       return false;
     }
 
     // Ocultar perPage y perMove cuando el tipo es fade
-    if ((field.key === 'perPage' || field.key === 'perMove') && currentType === 'fade') {
+    if (
+      (field.key === "perPage" || field.key === "perMove") &&
+      currentType === "fade"
+    ) {
       return false;
     }
-    
+
     return true;
   };
 
@@ -345,24 +497,31 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
         ...config,
         breakpoints: {
           ...config.breakpoints,
-          [activeBreakpoint]: {}
-        }
+          [activeBreakpoint]: {},
+        },
       });
-      toast.success(t('config.breakpoint_reset', { breakpoint: activeBreakpoint }));
+      toast.success(
+        t("config.breakpoint_reset", { breakpoint: activeBreakpoint }),
+      );
     } else {
       // Reset Desktop configuration - mantener breakpoints existentes
       onChange({
         ...initialConfig,
         breakpoints: config.breakpoints,
       });
-      toast.success(t('config.all_reset'));
+      toast.success(t("config.all_reset"));
     }
   };
 
   return (
-    <div className={cn("w-80 bg-card border-r flex flex-col overflow-hidden", className)}>
+    <div
+      className={cn(
+        "w-80 bg-card border-r flex flex-col overflow-hidden",
+        className,
+      )}
+    >
       <div className="flex items-center justify-between px-4 py-3 border-b">
-        <h2 className="text-sm font-medium">{t('config.title')}</h2>
+        <h2 className="text-sm font-medium">{t("config.title")}</h2>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -373,142 +532,224 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
                 onClick={handleReset}
               >
                 <RotateCcw className="h-4 w-4" />
-                {t('config.reset')}
+                {t("config.reset")}
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              {activeBreakpoint 
-                ? t('config.reset_breakpoint_tooltip', { breakpoint: activeBreakpoint })
-                : t('config.reset_all_tooltip')}
+              {activeBreakpoint
+                ? t("config.reset_breakpoint_tooltip", {
+                    breakpoint: activeBreakpoint,
+                  })
+                : t("config.reset_all_tooltip")}
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
-        <Accordion type="single" collapsible className="w-full">
-          {configSections.map((section) => (
-            <AccordionItem key={section.title} value={section.title}>
-              <AccordionTrigger className="px-4">
-                <span className="text-sm font-medium">{t(section.title)}</span>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="px-4 py-2 space-y-4">
-                  {section.fields.filter(shouldShowField).map((field) => (
-                    <div key={field.key} className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label htmlFor={field.key} className="text-sm">
-                          {t(field.label)}
-                        </Label>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Info className="h-4 w-4 text-muted-foreground" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="text-sm">{t(field.description)}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
+      <div className="px-4 py-2 border-b bg-muted/30">
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder={t("config.search_placeholder") || "Buscar opciones..."}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 h-9 bg-background/50 border-none ring-1 ring-border focus-visible:ring-primary/50 transition-all"
+          />
+        </div>
+      </div>
 
-                      {field.type === 'boolean' ? (
-                        <Switch
-                          id={field.key}
-                          checked={getCurrentValue(field.key, false)}
-                          onCheckedChange={(checked) => handleChange(field.key, checked)}
-                        />
-                      ) : field.type === 'select' ? (
-                        <Select
-                          value={getDisplayValue(field, getCurrentValue(field.key, field.defaultValue))}
-                          onValueChange={(value) => {
-                            if (field.optionValues && field.options) {
-                              const index = field.options.indexOf(value);
-                              if (index !== -1 && index < field.optionValues.length) {
-                                const optionValue = field.optionValues[index];
-                                if (optionValue !== null) {
-                                  handleChange(field.key, optionValue);
-                                }
-                              }
-                            } else {
-                              handleChange(field.key, value);
+      <div className="flex-1 overflow-y-auto">
+        <Accordion
+          type="multiple"
+          value={expandedItems}
+          onValueChange={setExpandedItems}
+          className="w-full"
+        >
+          {filteredSections.length > 0 ? (
+            filteredSections.map((section) => (
+              <AccordionItem key={section.title} value={section.title}>
+                <AccordionTrigger className="px-4">
+                  <div className="flex items-center gap-3">
+                    {section.icon && <SectionIcon iconName={section.icon} />}
+                    <span className="text-sm font-medium">
+                      {t(section.title)}
+                    </span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="px-4 py-2 space-y-4">
+                    {section.fields.filter(shouldShowField).map((field) => (
+                      <div key={field.key} className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor={field.key} className="text-sm">
+                            {t(field.label)}
+                          </Label>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Info className="h-4 w-4 text-muted-foreground" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-sm">
+                                  {t(field.description)}
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+
+                        {field.type === "boolean" ? (
+                          <Switch
+                            id={field.key}
+                            checked={getCurrentValue(field.key, false)}
+                            onCheckedChange={(checked) =>
+                              handleChange(field.key, checked)
                             }
-                          }}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {field.options?.map((option) => (
-                              <SelectItem key={option} value={option}>
-                                {t(option)}
-                              </SelectItem>
-                            )) ?? []}
-                          </SelectContent>
-                        </Select>
-                      ) : field.type === 'dimension' ? (
-                        <div className="flex gap-2">
-                          <Input
-                            type="number"
-                            showControls
-                            min={0}
-                            value={parseDimensionValue(getCurrentValue(field.key, field.defaultValue)).value}
-                            onChange={(e) => handleDimensionChange(
-                              field.key,
-                              e.target.value,
-                              parseDimensionValue(getCurrentValue(field.key)).unit
-                            )}
-                            className="w-full"
                           />
+                        ) : field.type === "select" ? (
                           <Select
-                            value={parseDimensionValue(getCurrentValue(field.key, field.defaultValue)).unit}
-                            onValueChange={(unit) => handleDimensionChange(
-                              field.key,
-                              parseDimensionValue(getCurrentValue(field.key)).value,
-                              unit
+                            value={getDisplayValue(
+                              field,
+                              getCurrentValue(field.key, field.defaultValue),
                             )}
+                            onValueChange={(value) => {
+                              if (field.optionValues && field.options) {
+                                const index = field.options.indexOf(value);
+                                if (
+                                  index !== -1 &&
+                                  index < field.optionValues.length
+                                ) {
+                                  const optionValue = field.optionValues[index];
+                                  if (optionValue !== null) {
+                                    handleChange(field.key, optionValue);
+                                  }
+                                }
+                              } else {
+                                handleChange(field.key, value);
+                              }
+                            }}
                           >
-                            <SelectTrigger className="w-24">
+                            <SelectTrigger className="w-full">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              {field.units?.map((unit) => (
-                                <SelectItem key={unit} value={unit}>
-                                  {unit}
+                              {field.options?.map((option) => (
+                                <SelectItem key={option} value={option}>
+                                  {t(option)}
                                 </SelectItem>
                               )) ?? []}
                             </SelectContent>
                           </Select>
-                        </div>
-                      ) : field.type === 'number' ? (
-                        <Input
-                          id={field.key}
-                          type="number"
-                          showControls
-                          min={field.key === 'perPage' || field.key === 'perMove' ? 1 : 0}
-                          step={field.step || 1}
-                          value={getCurrentValue(field.key, field.defaultValue)}
-                          onChange={(e) => handleChange(
-                            field.key, 
-                            e.target.value === '' ? '' : Number(e.target.value)
-                          )}
-                          className="w-full"
-                        />
-                      ) : (
-                        <Input
-                          id={field.key}
-                          type={field.type}
-                          value={getCurrentValue(field.key, field.defaultValue)}
-                          onChange={(e) => handleChange(field.key, e.target.value)}
-                          className="w-full"
-                        />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
+                        ) : field.type === "dimension" ? (
+                          <div className="flex gap-2">
+                            <Input
+                              type="number"
+                              showControls
+                              min={0}
+                              value={
+                                parseDimensionValue(
+                                  getCurrentValue(
+                                    field.key,
+                                    field.defaultValue,
+                                  ),
+                                ).value
+                              }
+                              onChange={(e) =>
+                                handleDimensionChange(
+                                  field.key,
+                                  e.target.value,
+                                  parseDimensionValue(
+                                    getCurrentValue(field.key),
+                                  ).unit,
+                                )
+                              }
+                              className="w-full"
+                            />
+                            <Select
+                              value={
+                                parseDimensionValue(
+                                  getCurrentValue(
+                                    field.key,
+                                    field.defaultValue,
+                                  ),
+                                ).unit
+                              }
+                              onValueChange={(unit) =>
+                                handleDimensionChange(
+                                  field.key,
+                                  parseDimensionValue(
+                                    getCurrentValue(field.key),
+                                  ).value,
+                                  unit,
+                                )
+                              }
+                            >
+                              <SelectTrigger className="w-24">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {field.units?.map((unit) => (
+                                  <SelectItem key={unit} value={unit}>
+                                    {unit}
+                                  </SelectItem>
+                                )) ?? []}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        ) : field.type === "number" ? (
+                          <Input
+                            id={field.key}
+                            type="number"
+                            showControls
+                            min={
+                              field.key === "perPage" || field.key === "perMove"
+                                ? 1
+                                : 0
+                            }
+                            step={field.step || 1}
+                            value={getCurrentValue(
+                              field.key,
+                              field.defaultValue,
+                            )}
+                            onChange={(e) =>
+                              handleChange(
+                                field.key,
+                                e.target.value === ""
+                                  ? ""
+                                  : Number(e.target.value),
+                              )
+                            }
+                            className="w-full"
+                          />
+                        ) : (
+                          <Input
+                            id={field.key}
+                            type={field.type}
+                            value={getCurrentValue(
+                              field.key,
+                              field.defaultValue,
+                            )}
+                            onChange={(e) =>
+                              handleChange(field.key, e.target.value)
+                            }
+                            className="w-full"
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))
+          ) : (
+            <div className="px-4 py-12 text-center text-muted-foreground animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <Search className="h-10 w-10 mx-auto mb-3 opacity-20" />
+              <p className="text-sm font-medium">{t("config.no_results")}</p>
+              <p className="text-xs opacity-70 mt-1">
+                {t("config.no_results_subtitle")}
+              </p>
+            </div>
+          )}
         </Accordion>
       </div>
     </div>

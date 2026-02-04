@@ -25,7 +25,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     if (type === 'number' && showControls) {
       return (
-        <div className="flex h-9 items-center rounded-md border border-input bg-transparent shadow-sm">
+        <div className="flex h-9 items-center rounded-md border border-input bg-transparent shadow-xs">
           <button
             type="button"
             onClick={handleDecrement}
@@ -43,7 +43,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             value={value}
             onChange={onChange}
             className={cn(
-              "h-full w-full border-0 bg-transparent px-2 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus-visible:outline-none focus-visible:ring-0",
+              "h-full w-full border-0 bg-transparent px-2 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus-visible:outline-hidden focus-visible:ring-0",
               className
             )}
             min={min}
@@ -70,10 +70,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <input
         type={type}
         className={cn(
-          "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+          "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
           className
         )}
         ref={ref}
+        onChange={onChange}
         {...props}
       />
     );

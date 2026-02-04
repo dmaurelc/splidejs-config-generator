@@ -3,6 +3,7 @@ import { ConfigPanel } from "./ConfigPanel";
 import { Preview } from "./Preview";
 import { CodeOutput } from "./CodeOutput";
 import { LanguageSelector } from "./LanguageSelector";
+import { ThemeToggle } from "./ThemeToggle";
 import { MobileToggle } from "./MobileToggle";
 import { MobileTabs, MobileTabType } from "./MobileTabs";
 import { MobileSidebar } from "./MobileSidebar";
@@ -10,6 +11,7 @@ import { SplideConfig } from "../types/config";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { initialConfig } from "../config/initialConfig";
+import { cn } from "../lib/utils";
 
 export const AppContent: React.FC = () => {
   const [config, setConfig] = useState<SplideConfig>(initialConfig);
@@ -50,7 +52,10 @@ export const AppContent: React.FC = () => {
               />
               <h1 className="text-lg font-semibold">{t("app.title")}</h1>
             </div>
-            <LanguageSelector />
+            <div className="flex items-center gap-2">
+              <LanguageSelector />
+              <ThemeToggle />
+            </div>
           </header>
 
           {/* Mobile Tabs */}
@@ -103,12 +108,22 @@ export const AppContent: React.FC = () => {
     <div className="min-h-screen bg-background flex flex-col h-screen">
       <div className="flex-1 flex flex-col h-full">
         <header
-          className={`bg-card border-b px-6 py-4 flex justify-between items-center ${
+          className={`bg-card/80 backdrop-blur-md border-b px-6 py-4 flex justify-between items-center transition-all duration-300 ${
             isFullscreen ? "hidden" : ""
           }`}
         >
-          <h1 className="text-xl font-semibold">{t("app.title")}</h1>
-          <LanguageSelector />
+          <h1 className="flex gap-2 items-center text-xl font-bold text-foreground">
+            <img
+              src="/favicon.png"
+              alt="SplideJS Config Generator"
+              className="w-6 h-6"
+            />
+            {t("app.title")}
+          </h1>
+          <div className="flex items-center gap-4">
+            <LanguageSelector />
+            <ThemeToggle />
+          </div>
         </header>
 
         <div className="flex-1 flex overflow-hidden h-full">
@@ -116,10 +131,13 @@ export const AppContent: React.FC = () => {
             config={config}
             onChange={setConfig}
             activeBreakpoint={activeBreakpoint}
-            className={isFullscreen ? "hidden" : ""}
+            className={cn(
+              isFullscreen ? "hidden" : "",
+              "glass-panel border-y-0",
+            )}
           />
 
-          <main className="flex-1 overflow-hidden">
+          <main className="flex-1 overflow-hidden relative">
             <Preview
               config={config}
               activeBreakpoint={activeBreakpoint}
@@ -133,7 +151,10 @@ export const AppContent: React.FC = () => {
 
           <CodeOutput
             config={config}
-            className={isFullscreen ? "hidden" : "h-full"}
+            className={cn(
+              isFullscreen ? "hidden" : "h-full",
+              "glass-panel border-y-0",
+            )}
             onChange={setConfig}
           />
         </div>
