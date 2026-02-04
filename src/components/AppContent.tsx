@@ -11,6 +11,7 @@ import { SplideConfig } from "../types/config";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { initialConfig } from "../config/initialConfig";
+import { cn } from "../lib/utils";
 
 export const AppContent: React.FC = () => {
   const [config, setConfig] = useState<SplideConfig>(initialConfig);
@@ -107,11 +108,13 @@ export const AppContent: React.FC = () => {
     <div className="min-h-screen bg-background flex flex-col h-screen">
       <div className="flex-1 flex flex-col h-full">
         <header
-          className={`bg-card border-b px-6 py-4 flex justify-between items-center ${
+          className={`bg-card/80 backdrop-blur-md border-b px-6 py-4 flex justify-between items-center transition-all duration-300 ${
             isFullscreen ? "hidden" : ""
           }`}
         >
-          <h1 className="text-xl font-semibold">{t("app.title")}</h1>
+          <h1 className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-primary to-primary/60">
+            {t("app.title")}
+          </h1>
           <div className="flex items-center gap-4">
             <LanguageSelector />
             <ThemeToggle />
@@ -123,10 +126,13 @@ export const AppContent: React.FC = () => {
             config={config}
             onChange={setConfig}
             activeBreakpoint={activeBreakpoint}
-            className={isFullscreen ? "hidden" : ""}
+            className={cn(
+              isFullscreen ? "hidden" : "",
+              "glass-panel border-y-0",
+            )}
           />
 
-          <main className="flex-1 overflow-hidden">
+          <main className="flex-1 overflow-hidden relative">
             <Preview
               config={config}
               activeBreakpoint={activeBreakpoint}
@@ -140,7 +146,10 @@ export const AppContent: React.FC = () => {
 
           <CodeOutput
             config={config}
-            className={isFullscreen ? "hidden" : "h-full"}
+            className={cn(
+              isFullscreen ? "hidden" : "h-full",
+              "glass-panel border-y-0",
+            )}
             onChange={setConfig}
           />
         </div>
